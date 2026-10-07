@@ -69,6 +69,8 @@ export interface Shelter {
   available_beds: number;
   is_safe: boolean;
   has_medical_staff: boolean;
+  has_oxygen?: boolean;
+  has_power_backup?: boolean;
 }
 
 export interface RouteResponse {
