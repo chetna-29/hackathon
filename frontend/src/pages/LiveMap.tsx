@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { DisasterMap } from '../map/DisasterMap';
 import { useDisasterData } from '../hooks/useDisasterData';
-import { Layers, AlertTriangle, ShieldAlert, Brain, Activity, Clock, Network } from 'lucide-react';
+import { Layers, AlertTriangle, Brain, Database, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const LiveMap: React.FC = () => {
   const { zones, households, queue, shelters, loading } = useDisasterData();
   const [selectedDistrict, setSelectedDistrict] = useState('Chamoli');
+  const [selectedDisaster, setSelectedDisaster] = useState('LANDSLIDE');
   const [layers, setLayers] = useState({ risk: true, sos: true, households: true, shelters: true, hospitals: true, rescue: true, routes: true });
   const navigate = useNavigate();
 
@@ -14,157 +15,157 @@ export const LiveMap: React.FC = () => {
     return <div className="p-8 text-center text-gray-400 animate-pulse">Loading Live Operations Map...</div>;
   }
 
-  // Find the primary high risk zone to mock the active incident panel
-  const highRiskZone = zones.find(z => z.risk_level === 'HIGH') || zones[0];
   const activeSOSCount = queue.length;
   const vulnerableCount = households.filter(h => h.vulnerability_score > 0.7).length;
 
   return (
-    <div className="flex flex-col h-full rounded-xl overflow-hidden relative border border-gray-800 bg-black">
+    <div className="flex flex-col h-full rounded-xl overflow-hidden relative border border-gray-800 bg-black animate-fade-in-up">
       
-      {/* Top Map Header - Floating */}
+      {/* Top Map Header - Floating Controls */}
       <div className="absolute top-4 left-4 right-4 z-[400] flex justify-between items-start pointer-events-none">
         
         {/* Left Side: Active Incident Panel */}
-        <div className="w-80 bg-gray-900/90 backdrop-blur-md border border-gray-700 rounded-lg shadow-2xl pointer-events-auto overflow-hidden">
-          <div className="bg-danger px-4 py-2 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-white animate-pulse" />
-            <h2 className="text-sm font-bold text-white tracking-widest uppercase">Active Incident</h2>
+        <div className="w-80 cinematic-card backdrop-blur-md border border-gray-700 rounded-xl shadow-2xl pointer-events-auto overflow-hidden">
+          <div className="bg-danger/20 border-b border-danger/30 px-4 py-3 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-danger animate-pulse glow-danger" />
+            <h2 className="text-sm font-bold text-danger tracking-widest uppercase">Live Incidents</h2>
           </div>
-          <div className="p-4 space-y-4">
+          <div className="p-5 space-y-5">
             <div>
-              <h3 className="text-xl font-bold text-white uppercase tracking-wider">{selectedDistrict} ZONE</h3>
-              <p className="text-danger text-xs font-bold uppercase tracking-widest">Landslide Risk</p>
+              <h3 className="text-2xl font-black text-white uppercase tracking-wider">{selectedDistrict}</h3>
+              <p className="text-warning text-xs font-bold uppercase tracking-widest mt-1">Primary Threat: {selectedDisaster}</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-y-3 text-sm">
-              <span className="text-gray-400">Risk Score</span>
-              <span className="text-white text-right font-bold text-lg leading-none">{highRiskZone ? (highRiskZone.risk_score * 100).toFixed(0) : 87}%</span>
+            <div className="grid grid-cols-2 gap-y-4 text-xs tracking-widest uppercase">
+              <span className="text-gray-500">Risk Score</span>
+              <span className="text-white text-right font-numbers font-bold text-xl leading-none">87%</span>
               
-              <span className="text-gray-400">Severity</span>
-              <span className="text-danger text-right font-bold">HIGH</span>
+              <span className="text-gray-500">Severity</span>
+              <span className="text-danger text-right font-bold bg-danger/10 border border-danger/30 rounded px-2 py-0.5 max-w-max ml-auto">CRITICAL</span>
               
-              <span className="text-gray-400">Vulnerable</span>
-              <span className="text-warning text-right font-bold">{vulnerableCount}</span>
+              <span className="text-gray-500">Vulnerable</span>
+              <span className="text-warning text-right font-numbers font-bold text-lg">{vulnerableCount}</span>
               
-              <span className="text-gray-400">Active SOS</span>
-              <span className="text-danger text-right font-bold">{activeSOSCount}</span>
+              <span className="text-gray-500">Active SOS</span>
+              <span className="text-danger text-right font-numbers font-bold text-lg">{activeSOSCount}</span>
             </div>
 
             <button 
-              onClick={() => navigate('/dashboard')}
-              className="w-full mt-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 py-2 rounded text-xs transition-colors font-medium tracking-widest uppercase"
+              onClick={() => navigate('/rescue')}
+              className="w-full mt-2 bg-danger hover:bg-danger-dark text-white shadow-[0_0_15px_rgba(255,59,48,0.3)] py-3 rounded text-[10px] transition-colors font-bold tracking-widest uppercase"
             >
-              View Details →
+              Open Rescue Queue →
             </button>
           </div>
         </div>
 
         {/* Right Side Controls */}
-        <div className="flex flex-col gap-4 items-end pointer-events-auto">
+        <div className="flex flex-col gap-4 items-end pointer-events-auto w-72">
           
-          {/* District Selector & Layer Control */}
-          <div className="flex gap-4">
+          {/* Selectors */}
+          <div className="flex flex-col gap-2 w-full">
             <select 
               value={selectedDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
-              className="bg-gray-900/90 backdrop-blur-md text-sm font-bold text-white px-4 py-2 rounded-lg border border-gray-700 shadow-xl outline-none hover:border-gray-500 cursor-pointer"
+              className="w-full bg-gray-900/90 backdrop-blur border border-gray-700 text-[10px] font-bold tracking-widest uppercase text-white px-4 py-3 rounded-lg shadow-xl outline-none hover:border-gray-500 cursor-pointer transition-colors"
             >
-              <option>Chamoli</option>
-              <option>Rudraprayag</option>
-              <option>Uttarkashi</option>
-              <option>Pithoragarh</option>
-              <option>Dehradun</option>
+              <option value="Chamoli">District: Chamoli</option>
+              <option value="Rudraprayag">District: Rudraprayag</option>
+              <option value="Uttarkashi">District: Uttarkashi</option>
+              <option value="Pithoragarh">District: Pithoragarh</option>
+              <option value="Dehradun">District: Dehradun</option>
             </select>
 
-            {/* Layer Control Dropdown Panel */}
-            <div className="bg-gray-900/90 backdrop-blur-md border border-gray-700 p-3 rounded-lg shadow-xl flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-widest mb-1 border-b border-gray-700 pb-2">
-                <Layers className="w-4 h-4 text-gray-400" />
-                <span className="font-bold text-gray-200">Map Layers</span>
-              </div>
-              <label className="flex items-center gap-3 text-xs text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded">
-                <input type="checkbox" checked={layers.risk} onChange={() => setLayers(l => ({...l, risk: !l.risk}))} className="accent-blue-500" /> 
-                <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-danger shadow-[0_0_5px_#ef4444]"></span> Risk Zones</div>
-              </label>
-              <label className="flex items-center gap-3 text-xs text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded">
-                <input type="checkbox" checked={layers.sos} onChange={() => setLayers(l => ({...l, sos: !l.sos}))} className="accent-blue-500" /> 
-                <div className="flex items-center gap-2">🚨 SOS Requests</div>
-              </label>
-              <label className="flex items-center gap-3 text-xs text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded">
-                <input type="checkbox" checked={layers.households} onChange={() => setLayers(l => ({...l, households: !l.households}))} className="accent-blue-500" /> 
-                <div className="flex items-center gap-2">👤 Vulnerable</div>
-              </label>
-              <label className="flex items-center gap-3 text-xs text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded">
-                <input type="checkbox" checked={layers.shelters} onChange={() => setLayers(l => ({...l, shelters: !l.shelters}))} className="accent-blue-500" /> 
-                <div className="flex items-center gap-2">🏠 Shelters</div>
-              </label>
-              <label className="flex items-center gap-3 text-xs text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded">
-                <input type="checkbox" checked={layers.hospitals} onChange={() => setLayers(l => ({...l, hospitals: !l.hospitals}))} className="accent-blue-500" /> 
-                <div className="flex items-center gap-2">🏥 Hospitals</div>
-              </label>
-              <label className="flex items-center gap-3 text-xs text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded">
-                <input type="checkbox" checked={layers.rescue} onChange={() => setLayers(l => ({...l, rescue: !l.rescue}))} className="accent-blue-500" /> 
-                <div className="flex items-center gap-2">🚑 Rescue Teams</div>
-              </label>
-              <label className="flex items-center gap-3 text-xs text-gray-300 cursor-pointer hover:bg-gray-800/50 p-1 rounded">
-                <input type="checkbox" checked={layers.routes} onChange={() => setLayers(l => ({...l, routes: !l.routes}))} className="accent-blue-500" /> 
-                <div className="flex items-center gap-2"><div className="w-3 h-0 border-t-2 border-cyan-400"></div> Safe Routes</div>
-              </label>
-            </div>
+            <select 
+              value={selectedDisaster}
+              onChange={(e) => setSelectedDisaster(e.target.value)}
+              className="w-full bg-danger/10 backdrop-blur border border-danger/30 text-[10px] font-bold tracking-widest uppercase text-danger px-4 py-3 rounded-lg shadow-xl outline-none hover:bg-danger/20 cursor-pointer transition-colors"
+            >
+              <option value="LANDSLIDE">Threat: Landslide</option>
+              <option value="FLASH FLOOD">Threat: Flash Flood</option>
+              <option value="FLOOD">Threat: Flood</option>
+              <option value="CLOUDBURST">Threat: Cloudburst</option>
+              <option value="FOREST FIRE">Threat: Forest Fire</option>
+              <option value="EARTHQUAKE">Threat: Earthquake</option>
+            </select>
           </div>
 
           {/* AI Risk Analysis Mini-Panel */}
-          <div className="w-64 bg-gray-900/90 backdrop-blur-md border border-gray-700 rounded-lg shadow-xl p-4">
-             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-blue-400 mb-3 border-b border-gray-800 pb-2">
+          <div className="w-full cinematic-card backdrop-blur border border-gray-700 rounded-xl shadow-xl p-5">
+             <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-info mb-4 border-b border-gray-800 pb-3">
                 <Brain className="w-4 h-4" />
                 <span className="font-bold">AI Risk Analysis</span>
              </div>
              
-             <div className="space-y-3">
-               <div className="flex justify-between items-center">
-                 <span className="text-[10px] text-gray-400 uppercase">Predicted Risk</span>
-                 <span className="text-danger font-bold text-sm">87% (HIGH)</span>
-               </div>
-               
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Rainfall</span><span>Critical</span>
+             <div className="space-y-4">
+               <div className="space-y-1.5">
+                 <div className="flex justify-between text-[9px] text-gray-400 uppercase tracking-widest font-bold">
+                   <span>Rainfall</span><span className="text-danger">Critical</span>
                  </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-danger w-[90%]"></div>
+                 <div className="flex h-1 gap-0.5">
+                   {[...Array(10)].map((_, i) => <div key={i} className={`flex-1 rounded-sm ${i < 9 ? 'bg-danger glow-danger' : 'bg-gray-800'}`}></div>)}
                  </div>
                </div>
                
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Slope</span><span>High</span>
+               <div className="space-y-1.5">
+                 <div className="flex justify-between text-[9px] text-gray-400 uppercase tracking-widest font-bold">
+                   <span>Slope</span><span className="text-warning">High</span>
                  </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-warning w-[75%]"></div>
-                 </div>
-               </div>
-               
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Elevation</span><span>Moderate</span>
-                 </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-blue-500 w-[50%]"></div>
+                 <div className="flex h-1 gap-0.5">
+                   {[...Array(10)].map((_, i) => <div key={i} className={`flex-1 rounded-sm ${i < 8 ? 'bg-warning' : 'bg-gray-800'}`}></div>)}
                  </div>
                </div>
                
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Soil Saturation</span><span>High</span>
+               <div className="space-y-1.5">
+                 <div className="flex justify-between text-[9px] text-gray-400 uppercase tracking-widest font-bold">
+                   <span>Elevation</span><span className="text-info">Moderate</span>
                  </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-warning w-[80%]"></div>
+                 <div className="flex h-1 gap-0.5">
+                   {[...Array(10)].map((_, i) => <div key={i} className={`flex-1 rounded-sm ${i < 5 ? 'bg-info' : 'bg-gray-800'}`}></div>)}
                  </div>
                </div>
              </div>
           </div>
           
+          {/* Layer Controls */}
+          <div className="w-full cinematic-card backdrop-blur border border-gray-700 p-4 rounded-xl shadow-xl flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest mb-1 border-b border-gray-800 pb-2">
+              <Layers className="w-3 h-3 text-gray-400" />
+              <span className="font-bold text-gray-200">Operational Layers</span>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" checked={layers.risk} onChange={() => setLayers(l => ({...l, risk: !l.risk}))} className="accent-info" /> 
+                <span className="w-2 h-2 rounded-full bg-danger"></span> Risk Zones
+              </label>
+              <label className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" checked={layers.sos} onChange={() => setLayers(l => ({...l, sos: !l.sos}))} className="accent-info" /> 
+                <span>🚨 SOS</span>
+              </label>
+              <label className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" checked={layers.households} onChange={() => setLayers(l => ({...l, households: !l.households}))} className="accent-info" /> 
+                <span>👤 Vuln.</span>
+              </label>
+              <label className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" checked={layers.shelters} onChange={() => setLayers(l => ({...l, shelters: !l.shelters}))} className="accent-info" /> 
+                <span>🏠 Shelters</span>
+              </label>
+              <label className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" checked={layers.hospitals} onChange={() => setLayers(l => ({...l, hospitals: !l.hospitals}))} className="accent-info" /> 
+                <span>🏥 Hospitals</span>
+              </label>
+              <label className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" checked={layers.rescue} onChange={() => setLayers(l => ({...l, rescue: !l.rescue}))} className="accent-info" /> 
+                <span>🚑 Teams</span>
+              </label>
+              <label className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors col-span-2">
+                <input type="checkbox" checked={layers.routes} onChange={() => setLayers(l => ({...l, routes: !l.routes}))} className="accent-info" /> 
+                <div className="w-3 h-0 border-t-2 border-dashed border-info glow-safe"></div> Routes
+              </label>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -179,51 +180,33 @@ export const LiveMap: React.FC = () => {
           visibleLayers={layers}
           selectedDistrict={selectedDistrict}
         />
-        
-        {/* Empty State Overlay if no SOS */}
-        {activeSOSCount === 0 && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[1000] flex flex-col items-center opacity-50">
-            <ShieldAlert className="w-16 h-16 text-safe mb-4 opacity-50" />
-            <h2 className="text-xl font-bold tracking-widest text-safe uppercase">No Active SOS Requests</h2>
-            <p className="text-xs text-gray-400 tracking-widest uppercase mt-2">System Monitoring Live Map</p>
-          </div>
-        )}
       </div>
 
       {/* Bottom Information Bar */}
-      <div className="absolute bottom-0 left-0 right-0 z-[400] bg-gray-900/95 backdrop-blur-md border-t border-gray-800 px-6 py-2 flex items-center justify-between text-xs tracking-widest uppercase shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center gap-8">
+      <div className="absolute bottom-4 left-4 right-4 z-[400] bg-gray-900/90 backdrop-blur border border-gray-800 rounded-xl px-6 py-3 flex items-center justify-between text-[10px] font-bold tracking-widest uppercase shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto">
+        <div className="flex items-center gap-6">
+          <span className="text-gray-500 flex items-center gap-2"><Cpu className="w-3 h-3 text-info" /> SYSTEM STATUS:</span>
           <div className="flex items-center gap-2">
-            <span className="text-gray-500">Active Risks</span>
-            <span className="font-bold text-danger">{zones.filter(z => z.risk_level === 'HIGH').length}</span>
+            <span className="w-2 h-2 rounded-full bg-safe animate-pulse"></span>
+            <span className="text-white">API</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-500">SOS</span>
-            <span className="font-bold text-danger">{activeSOSCount}</span>
+            <span className="w-2 h-2 rounded-full bg-safe animate-pulse"></span>
+            <span className="text-white">WEBSOCKET</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-500">Vulnerable</span>
-            <span className="font-bold text-warning">{vulnerableCount}</span>
+            <span className="w-2 h-2 rounded-full bg-warning animate-pulse"></span>
+            <span className="text-white">MESH</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-500">Shelters</span>
-            <span className="font-bold text-safe">{shelters.length}</span>
+            <span className="w-2 h-2 rounded-full bg-safe animate-pulse"></span>
+            <span className="text-white">ML ENGINE</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2 text-gray-400">
-            <Clock className="w-3 h-3" />
-            <span>Last Update: {new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })}</span>
-          </div>
-          <div className="flex items-center gap-2 text-safe">
-            <Network className="w-3 h-3" />
-            <span className="font-bold">MESH STANDBY</span>
-          </div>
-          <div className="flex items-center gap-2 text-safe">
-            <Activity className="w-3 h-3" />
-            <span className="font-bold">API ONLINE</span>
-          </div>
+        <div className="flex items-center gap-2 text-info bg-info/10 px-3 py-1 rounded border border-info/30">
+          <Database className="w-3 h-3" />
+          <span>DATA SYNCED</span>
         </div>
       </div>
 

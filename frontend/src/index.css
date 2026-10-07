@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-base: #0b1120;
-  --color-bg-card: #111827;
-  --color-bg-card-hover: #1f2937;
+  --color-bg-base: #05080D;
+  --color-bg-card: #0B1118;
+  --color-bg-card-hover: #131b26;
   --color-border-card: #1f2937;
   
-  --color-danger: #ef4444;
+  --color-danger: #FF3B30;
   --color-danger-dark: #b91c1c;
-  --color-warning: #f59e0b;
-  --color-safe: #10b981;
-  --color-info: #3b82f6;
+  --color-warning: #FF9F0A;
+  --color-safe: #30D158;
+  --color-info: #00D4FF;
   
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @layer base {
@@ -26,42 +27,26 @@
   height: 100%;
   border-radius: 0.75rem;
   z-index: 0;
-  background: #0b1120;
+  background: #05080D;
 }
 
 .map-tiles-dark {
-  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+  filter: brightness(0.5) invert(1) contrast(3.5) hue-rotate(200deg) saturate(0.2) brightness(0.6);
 }
 
 /* Scrollbar styling */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #374151;
-  border-radius: 4px;
+  background: #1f2937;
+  border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
-}
-
-/* Custom map popup styling */
-.dark-popup .leaflet-popup-content-wrapper {
-  background: rgba(17, 24, 39, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid #374151;
-  border-radius: 0.5rem;
-  color: white;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  padding: 0;
-}
-.dark-popup .leaflet-popup-tip {
-  background: rgba(17, 24, 39, 0.95);
-  border-left: 1px solid #374151;
-  border-top: 1px solid #374151;
+  background: #374151;
 }
 
 /* Cinematic Popup */
@@ -74,7 +59,7 @@
   margin: 0;
 }
 .cinematic-popup .leaflet-popup-tip-container {
-  display: none; /* Hide default triangle */
+  display: none;
 }
 
 /* Route animations */
@@ -89,12 +74,124 @@
 }
 
 .safe-route-line {
-  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.8));
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.8));
 }
 
 /* Map legend */
 .map-legend {
-  background: rgba(17, 24, 39, 0.85);
-  backdrop-filter: blur(4px);
-  border: 1px solid #374151;
+  background: rgba(11, 17, 24, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid #1f2937;
+}
+
+/* Utility Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+@keyframes pulse-glow-danger {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 59, 48, 0.4); border-color: rgba(255, 59, 48, 0.5); }
+  50% { box-shadow: 0 0 25px rgba(255, 59, 48, 0.8); border-color: rgba(255, 59, 48, 1); }
+}
+
+.glow-danger {
+  animation: pulse-glow-danger 2s infinite;
+}
+
+@keyframes data-packet {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  100% { transform: translateX(100%) scale(0.5); opacity: 0; }
+}
+
+.animate-data-packet {
+  animation: data-packet 1.5s linear infinite;
+}
+
+/* Cinematic Card Hover */
+.cinematic-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(180deg, rgba(11, 17, 24, 0.8) 0%, rgba(5, 8, 13, 0.9) 100%);
+}
+
+.cinematic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -10px rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.cinematic-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cinematic-card:hover::before {
+  opacity: 1;
+}
+
+/* Number Counter Font */
+.font-numbers {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Environmental Animations */
+
+@keyframes drift-slow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-10%); }
+}
+
+@keyframes drift-fast {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-20%); }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+@keyframes float-leaf {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translate(100px, 100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes lighting-cycle {
+  0%, 100% { filter: brightness(1) sepia(0.2) hue-rotate(-10deg); }
+  50% { filter: brightness(0.8) sepia(0.4) hue-rotate(-20deg); }
+}
+
+@keyframes environment-data-pulse {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift-slow,
+  .animate-drift-fast,
+  .animate-sway,
+  .animate-float-leaf,
+  .animate-lighting-cycle,
+  .animate-data-pulse {
+    animation: none !important;
+    transform: none !important;
+  }
 }
