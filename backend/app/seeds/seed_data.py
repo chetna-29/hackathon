@@ -29,6 +29,7 @@ def seed_hackathon_demo_data(db: Session):
         vulnerable_population=87,
         center_lat=11.6080,
         center_lng=76.0920,
+        polygon=f"SRID=4326;POLYGON(({76.0920-0.01} {11.6080-0.01}, {76.0920+0.01} {11.6080-0.01}, {76.0920+0.01} {11.6080+0.01}, {76.0920-0.01} {11.6080+0.01}, {76.0920-0.01} {11.6080-0.01}))"
     )
     zone_2 = RiskZone(
         zone_code="ZONE-02-VALLEY",
@@ -42,6 +43,7 @@ def seed_hackathon_demo_data(db: Session):
         vulnerable_population=210,
         center_lat=11.6200,
         center_lng=76.1000,
+        polygon=f"SRID=4326;POLYGON(({76.1000-0.01} {11.6200-0.01}, {76.1000+0.01} {11.6200-0.01}, {76.1000+0.01} {11.6200+0.01}, {76.1000-0.01} {11.6200+0.01}, {76.1000-0.01} {11.6200-0.01}))"
     )
     db.add_all([zone_4, zone_2])
 
@@ -52,6 +54,7 @@ def seed_hackathon_demo_data(db: Session):
         address="42 Hilltop Ridge, Sector 4",
         latitude=11.6082,
         longitude=76.0921,
+        location="SRID=4326;POINT(76.0921 11.6082)",
         elevation=1260.0,
         members_count=4,
         elderly_count=2,
@@ -67,6 +70,7 @@ def seed_hackathon_demo_data(db: Session):
         address="15 Ridge View",
         latitude=11.6075,
         longitude=76.0930,
+        location="SRID=4326;POINT(76.0930 11.6075)",
         elevation=1255.0,
         members_count=3,
         elderly_count=0,
@@ -84,6 +88,7 @@ def seed_hackathon_demo_data(db: Session):
         facility_type="SHELTER",
         latitude=11.6300,
         longitude=76.1150,
+        location="SRID=4326;POINT(76.1150 11.6300)",
         capacity=100,
         current_occupancy=58,
         has_medical_staff=True,

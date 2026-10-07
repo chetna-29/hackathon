@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
 from datetime import datetime
+from geoalchemy2 import Geometry
 from app.database import Base
 
 class Shelter(Base):
@@ -11,6 +12,7 @@ class Shelter(Base):
     facility_type = Column(String(50), default="SHELTER") # SHELTER, HOSPITAL, CLINIC
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
     capacity = Column(Integer, default=100)
     current_occupancy = Column(Integer, default=0)
     has_medical_staff = Column(Boolean, default=True)

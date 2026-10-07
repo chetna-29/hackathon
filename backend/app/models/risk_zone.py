@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, Text, DateTime
 from datetime import datetime
+from geoalchemy2 import Geometry
 from app.database import Base
 
 class RiskZone(Base):
@@ -20,5 +21,6 @@ class RiskZone(Base):
     vulnerable_population = Column(Integer, default=40)
     center_lat = Column(Float, nullable=False)
     center_lng = Column(Float, nullable=False)
+    polygon = Column(Geometry(geometry_type='POLYGON', srid=4326), nullable=True)
     polygon_geojson = Column(Text, nullable=True) # JSON coordinates polygon
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
