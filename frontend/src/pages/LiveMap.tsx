@@ -20,7 +20,7 @@ export const LiveMap: React.FC = () => {
   const vulnerableCount = households.filter(h => h.vulnerability_score > 0.7).length;
 
   return (
-    <div className="flex flex-col h-full rounded-xl overflow-hidden relative border border-gray-800 bg-black">
+    <div className="flex flex-col h-full rounded-lg overflow-hidden relative border border-gray-800 bg-black">
       
       {/* Top Map Header - Floating */}
       <div className="absolute top-4 left-4 right-4 z-[400] flex justify-between items-start pointer-events-none">
@@ -29,12 +29,12 @@ export const LiveMap: React.FC = () => {
         <div className="w-80 bg-gray-900/90 backdrop-blur-md border border-gray-700 rounded-lg shadow-2xl pointer-events-auto overflow-hidden">
           <div className="bg-danger px-4 py-2 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-white animate-pulse" />
-            <h2 className="text-sm font-bold text-white tracking-widest uppercase">Active Incident</h2>
+            <h2 className="text-sm font-bold text-white tracking-normal uppercase">Active Incident</h2>
           </div>
           <div className="p-4 space-y-4">
             <div>
-              <h3 className="text-xl font-bold text-white uppercase tracking-wider">{selectedDistrict} ZONE</h3>
-              <p className="text-danger text-xs font-bold uppercase tracking-widest">Landslide Risk</p>
+              <h3 className="text-xl font-bold text-white uppercase tracking-normal">{selectedDistrict} ZONE</h3>
+              <p className="text-danger text-xs font-bold uppercase tracking-normal">Landslide Risk</p>
             </div>
             
             <div className="grid grid-cols-2 gap-y-3 text-sm">
@@ -51,12 +51,28 @@ export const LiveMap: React.FC = () => {
               <span className="text-danger text-right font-bold">{activeSOSCount}</span>
             </div>
 
-            <button 
-              onClick={() => navigate('/dashboard')}
-              className="w-full mt-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 py-2 rounded text-xs transition-colors font-medium tracking-widest uppercase"
-            >
-              View Details →
-            </button>
+            <div className="flex gap-2 mt-2">
+              <button 
+                onClick={async () => {
+                  try {
+                    const { disasterApi } = await import('../services/api');
+                    const res = await disasterApi.predictLandslide(highRiskZone ? highRiskZone.current_rainfall_mm : 150, highRiskZone ? highRiskZone.slope_gradient : 35);
+                    alert(`Prediction Result:\nRisk Category: ${res.risk_category}\nProbability: ${(res.landslide_probability * 100).toFixed(1)}%`);
+                  } catch (e) {
+                    console.error('Failed to run prediction');
+                  }
+                }}
+                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white border border-blue-500 py-2 rounded text-xs transition-colors font-medium tracking-normal uppercase"
+              >
+                Run Prediction
+              </button>
+              <button 
+                onClick={() => navigate('/dashboard')}
+                className="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 py-2 rounded text-xs transition-colors font-medium tracking-normal uppercase"
+              >
+                View Details →
+              </button>
+            </div>
           </div>
         </div>
 
@@ -79,7 +95,7 @@ export const LiveMap: React.FC = () => {
 
             {/* Layer Control Dropdown Panel */}
             <div className="bg-gray-900/90 backdrop-blur-md border border-gray-700 p-3 rounded-lg shadow-xl flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-widest mb-1 border-b border-gray-700 pb-2">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-normal mb-1 border-b border-gray-700 pb-2">
                 <Layers className="w-4 h-4 text-gray-400" />
                 <span className="font-bold text-gray-200">Map Layers</span>
               </div>
@@ -115,55 +131,59 @@ export const LiveMap: React.FC = () => {
           </div>
 
           {/* AI Risk Analysis Mini-Panel */}
-          <div className="w-64 bg-gray-900/90 backdrop-blur-md border border-gray-700 rounded-lg shadow-xl p-4">
-             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-blue-400 mb-3 border-b border-gray-800 pb-2">
-                <Brain className="w-4 h-4" />
-                <span className="font-bold">AI Risk Analysis</span>
-             </div>
-             
-             <div className="space-y-3">
-               <div className="flex justify-between items-center">
-                 <span className="text-[10px] text-gray-400 uppercase">Predicted Risk</span>
-                 <span className="text-danger font-bold text-sm">87% (HIGH)</span>
+          {highRiskZone && (
+            <div className="w-64 bg-gray-900/90 backdrop-blur-md border border-gray-700 rounded-lg shadow-xl p-4">
+               <div className="flex items-center gap-2 text-xs uppercase tracking-normal text-blue-400 mb-3 border-b border-gray-800 pb-2">
+                  <Brain className="w-4 h-4" />
+                  <span className="font-bold">AI Risk Analysis: {highRiskZone.name}</span>
                </div>
                
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Rainfall</span><span>Critical</span>
+               <div className="space-y-3">
+                 <div className="flex justify-between items-center">
+                   <span className="text-[10px] text-gray-400 uppercase">Predicted Risk</span>
+                   <span className={`font-bold text-sm ${highRiskZone.risk_level === 'HIGH' ? 'text-danger' : highRiskZone.risk_level === 'MEDIUM' ? 'text-warning' : 'text-safe'}`}>
+                     {(highRiskZone.risk_score * 100).toFixed(0)}% ({highRiskZone.risk_level})
+                   </span>
                  </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-danger w-[90%]"></div>
+                 
+                 <div className="space-y-1">
+                   <div className="flex justify-between text-[9px] text-gray-400 uppercase">
+                     <span>Rainfall</span><span>{highRiskZone.current_rainfall_mm.toFixed(1)} mm</span>
+                   </div>
+                   <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
+                     <div className={`h-full ${highRiskZone.current_rainfall_mm > 100 ? 'bg-danger' : 'bg-warning'}`} style={{ width: `${Math.min((highRiskZone.current_rainfall_mm / 200) * 100, 100)}%` }}></div>
+                   </div>
+                 </div>
+                 
+                 <div className="space-y-1">
+                   <div className="flex justify-between text-[9px] text-gray-400 uppercase">
+                     <span>Slope</span><span>{highRiskZone.slope_gradient.toFixed(1)}°</span>
+                   </div>
+                   <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
+                     <div className="h-full bg-warning" style={{ width: `${Math.min((highRiskZone.slope_gradient / 90) * 100, 100)}%` }}></div>
+                   </div>
+                 </div>
+                 
+                 <div className="space-y-1">
+                   <div className="flex justify-between text-[9px] text-gray-400 uppercase">
+                     <span>Elevation</span><span>{highRiskZone.elevation_m.toFixed(0)} m</span>
+                   </div>
+                   <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
+                     <div className="h-full bg-blue-500" style={{ width: `${Math.min((highRiskZone.elevation_m / 4000) * 100, 100)}%` }}></div>
+                   </div>
+                 </div>
+                 
+                 <div className="space-y-1">
+                   <div className="flex justify-between text-[9px] text-gray-400 uppercase">
+                     <span>Soil Saturation</span><span>{highRiskZone.soil_saturation ? 'High' : 'Normal'}</span>
+                   </div>
+                   <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
+                     <div className={`h-full ${highRiskZone.soil_saturation ? 'bg-danger w-[90%]' : 'bg-safe w-[30%]'}`}></div>
+                   </div>
                  </div>
                </div>
-               
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Slope</span><span>High</span>
-                 </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-warning w-[75%]"></div>
-                 </div>
-               </div>
-               
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Elevation</span><span>Moderate</span>
-                 </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-blue-500 w-[50%]"></div>
-                 </div>
-               </div>
-               
-               <div className="space-y-1">
-                 <div className="flex justify-between text-[9px] text-gray-400 uppercase">
-                   <span>Soil Saturation</span><span>High</span>
-                 </div>
-                 <div className="h-1.5 w-full bg-gray-800 rounded overflow-hidden">
-                   <div className="h-full bg-warning w-[80%]"></div>
-                 </div>
-               </div>
-             </div>
-          </div>
+            </div>
+          )}
           
         </div>
       </div>
@@ -184,14 +204,14 @@ export const LiveMap: React.FC = () => {
         {activeSOSCount === 0 && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[1000] flex flex-col items-center opacity-50">
             <ShieldAlert className="w-16 h-16 text-safe mb-4 opacity-50" />
-            <h2 className="text-xl font-bold tracking-widest text-safe uppercase">No Active SOS Requests</h2>
-            <p className="text-xs text-gray-400 tracking-widest uppercase mt-2">System Monitoring Live Map</p>
+            <h2 className="text-xl font-bold tracking-normal text-safe uppercase">No Active SOS Requests</h2>
+            <p className="text-xs text-gray-400 tracking-normal uppercase mt-2">System Monitoring Live Map</p>
           </div>
         )}
       </div>
 
       {/* Bottom Information Bar */}
-      <div className="absolute bottom-0 left-0 right-0 z-[400] bg-gray-900/95 backdrop-blur-md border-t border-gray-800 px-6 py-2 flex items-center justify-between text-xs tracking-widest uppercase shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+      <div className="absolute bottom-0 left-0 right-0 z-[400] bg-gray-900/95 backdrop-blur-md border-t border-gray-800 px-6 py-2 flex items-center justify-between text-xs tracking-normal uppercase shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2">
             <span className="text-gray-500">Active Risks</span>

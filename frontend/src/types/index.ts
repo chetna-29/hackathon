@@ -7,6 +7,10 @@ export interface RiskZone {
   center_lng: number;
   population: number;
   vulnerable_population: number;
+  current_rainfall_mm: number;
+  slope_gradient: number;
+  elevation_m: number;
+  soil_saturation: number;
 }
 
 export interface Household {
@@ -48,6 +52,10 @@ export interface PriorityItem {
   rank: number;
   elderly_count: number;
   disabled_count: number;
+  source_type?: string;
+  via_mesh?: string;
+  hops_count?: number;
+  notes?: string;
 }
 
 export interface Shelter {

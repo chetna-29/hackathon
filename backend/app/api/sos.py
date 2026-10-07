@@ -6,7 +6,9 @@ import uuid
 from app.database import get_db
 from app.models.sos import SOSRequest
 from app.schemas.sos import SOSCreate, SOSStatusUpdate, SOSResponse
-from app.services.websocket_manager import ws_manager
+from app.services.websocket_manager import publish_event
+from app.schemas.mesh import MeshPacket, MeshPacketAck
+from app.services.mesh_gateway import process_mesh_packet
 
 router = APIRouter()
 
@@ -23,13 +25,26 @@ async def create_sos(sos_in: SOSCreate, db: Session = Depends(get_db)):
         severity=sos_in.severity,
         status="PENDING",
         notes=sos_in.notes,
-        via_mesh=sos_in.via_mesh
+        via_mesh=sos_in.via_mesh,
+        source_type="MOBILE",
+        location_geom=f"SRID=4326;POINT({sos_in.longitude} {sos_in.latitude})"
     )
     db.add(new_sos)
     db.commit()
     db.refresh(new_sos)
 
-    await ws_manager.broadcast("NEW_SOS", {"sos_code": new_sos.sos_code, "severity": new_sos.severity})
+    publish_event("NEW_SOS", {"sos_code": new_sos.sos_code, "severity": new_sos.severity})
+    
+    # Dispatch alerts
+    import asyncio
+    from app.services.alerts_service import dispatch_emergency_alerts
+    asyncio.create_task(dispatch_emergency_alerts(
+        sos_code=new_sos.sos_code,
+        severity=new_sos.severity,
+        location_str=f"{new_sos.latitude}, {new_sos.longitude}",
+        message=f"Online SOS received"
+    ))
+    
     return new_sos
 
 @router.get("/active", response_model=List[SOSResponse])
@@ -50,5 +65,34 @@ async def update_sos_status(sos_id: int, status_update: SOSStatusUpdate, db: Ses
 
     db.commit()
     db.refresh(sos)
-    await ws_manager.broadcast("SOS_STATUS_UPDATED", {"sos_id": sos.id, "status": sos.status})
+    publish_event("SOS_STATUS_UPDATED", {"sos_id": sos.id, "status": sos.status})
     return sos
+
+@router.post("/mesh", response_model=MeshPacketAck)
+async def receive_mesh_packet_sos(packet: MeshPacket, db: Session = Depends(get_db)):
+    result = process_mesh_packet(db, packet)
+    
+    if result["action_taken"] == "SOS_ENQUEUED" and result["associated_sos_code"]:
+        publish_event("NEW_SOS", {
+            "sos_code": result["associated_sos_code"],
+            "severity": packet.severity,
+            "via_mesh": True
+        })
+        
+        # Dispatch to Discord, Telegram, FCM in background
+        import asyncio
+        from app.services.alerts_service import dispatch_emergency_alerts
+        asyncio.create_task(dispatch_emergency_alerts(
+            sos_code=result["associated_sos_code"],
+            severity=packet.severity,
+            location_str=f"{packet.latitude}, {packet.longitude}",
+            message=f"Mesh Packet received from Household {packet.household_code} with vulnerabilities: {packet.payload.vulnerabilities}"
+        ))
+        
+    return MeshPacketAck(
+        status=result["status"],
+        message_id=result["message_id"],
+        action_taken=result["action_taken"],
+        associated_sos_code=result["associated_sos_code"]
+    )
+

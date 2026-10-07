@@ -4,6 +4,8 @@ from app.models.mesh_message import MeshMessage
 from app.models.sos import SOSRequest
 from app.schemas.mesh import MeshPacket
 from app.redis_client import redis_client
+from app.services.ml_service import predict_risk_at_location
+from app.services.priority_engine import calculate_priority_score
 import uuid
 import json
 
@@ -63,16 +65,41 @@ def process_mesh_packet(db: Session, packet: MeshPacket) -> Dict[str, Any]:
 
         if not existing_sos:
             sos_code = f"SOS-MESH-{str(uuid.uuid4())[:6].upper()}"
+            
+            # Predict Risk & Calculate Priority
+            ml_risk = predict_risk_at_location(packet.latitude, packet.longitude)
+            
+            # Medical urgency extraction from vulnerabilities
+            medical_text = ', '.join(packet.payload.vulnerabilities) if packet.payload and packet.payload.vulnerabilities else ''
+            
+            # Use default vulnerability/isolation for unknown hardware nodes, can adjust if household found
+            vuln_score = 0.5
+            if packet.payload and packet.payload.vulnerabilities:
+                vuln_score = 0.8 # Boost vulnerability if specifically reported from hardware
+
+            scores = calculate_priority_score(
+                severity=packet.severity,
+                vulnerability_score=vuln_score,
+                zone_risk_score=0.5, # Default since we don't fetch zone here
+                isolation_score=0.7,
+                time_decay=0.0, # Fresh
+                medical_urgency=0.0, # Handled by priority_engine queue run mostly, but we can try to pass some
+                ml_risk=ml_risk,
+            )
+
             new_sos = SOSRequest(
                 sos_code=sos_code,
                 household_code=packet.household_id,
                 sender_device_id=packet.sender_id,
                 latitude=packet.latitude,
                 longitude=packet.longitude,
+                location_geom=f"SRID=4326;POINT({packet.longitude} {packet.latitude})",
                 emergency_type="MESH_EMERGENCY",
                 severity=packet.severity,
                 status="PENDING",
-                notes=f"Received via Offline Mesh. Hops: {len(packet.hops)}. Vulnerabilities: {', '.join(packet.payload.vulnerabilities) if packet.payload and packet.payload.vulnerabilities else 'None'}. Battery: {packet.payload.battery_level if packet.payload else 'Unknown'}%",
+                source_type="HARDWARE",
+                priority_score=scores["total_score"],
+                notes=f"Received via Offline Mesh. Hops: {len(packet.hops)}. Vulnerabilities: {medical_text or 'None'}. Battery: {packet.payload.battery_level if packet.payload else 'Unknown'}%",
                 via_mesh="TRUE",
                 hops_count=len(packet.hops)
             )

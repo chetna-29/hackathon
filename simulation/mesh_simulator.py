@@ -8,6 +8,7 @@ import time
 import uuid
 import json
 import sys
+import requests
 
 # Ensure UTF-8 output on Windows consoles
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
@@ -43,7 +44,23 @@ class MeshNode:
 
         if self.is_gateway:
             print(f"[{self.node_id}] ★ GATEWAY RECEIVED SOS: {msg_id} from {packet['sender_id']}! Hops: {' -> '.join(packet['hops'])}")
-            print(f"[{self.node_id}] UPLOADING TO COMMAND CENTER DATABASE...")
+            print(f"[{self.node_id}] UPLOADING TO COMMAND CENTER DATABASE via POST /api/v1/sos/mesh...")
+            
+            try:
+                # Add payload wrapper like in the schema
+                api_packet = dict(packet)
+                if "payload" not in api_packet:
+                    api_packet["payload"] = {
+                        "vulnerabilities": ["ELDERLY", "MOBILITY_IMPAIRED"],
+                        "people_count": 2,
+                        "battery_level": 82
+                    }
+                response = requests.post("http://127.0.0.1:8000/api/v1/sos/mesh", json=api_packet)
+                print(f"[{self.node_id}] SERVER RESPONSE: {response.status_code}")
+                print(json.dumps(response.json(), indent=2))
+            except Exception as e:
+                print(f"[{self.node_id}] ❌ FAILED TO REACH BACKEND: {e}")
+                
             return True
 
         print(f"[{self.node_id}] MESSAGE RECEIVED: {msg_id} (TTL={packet['ttl']})")

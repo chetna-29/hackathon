@@ -25,7 +25,7 @@ export const ShelterCard: React.FC<Props> = ({ shelter, distanceKm }) => {
       </div>
       
       <div className="flex items-center gap-4">
-        <span className={`text-[10px] px-2 py-1 rounded-full border font-bold tracking-wider ${
+        <span className={`text-[10px] px-2 py-1 rounded-full border font-bold tracking-normal ${
           isAvailable ? 'bg-safe/20 text-safe border-safe/30' : 'bg-warning/20 text-warning border-warning/30'
         }`}>
           {shelter.available_beds} available

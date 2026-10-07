@@ -6,7 +6,7 @@ interface Props {
 
 export const MeshStatus: React.FC<Props> = ({ messages }) => {
   return (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 p-4 shadow-lg">
+    <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 shadow-lg">
       <h2 className="text-lg font-semibold border-b border-gray-700 pb-2 mb-3">Offline Mesh Monitor</h2>
       {messages.length === 0 ? (
         <p className="text-gray-500 text-sm italic text-center py-4">No offline packets intercepted.</p>
@@ -25,7 +25,7 @@ export const MeshStatus: React.FC<Props> = ({ messages }) => {
         </div>
       )}
       <div className="mt-3 text-center border-t border-gray-700 pt-3">
-        <span className="text-xs tracking-widest text-gray-400">GATEWAY CONNECTED</span>
+        <span className="text-xs tracking-normal text-gray-400">GATEWAY CONNECTED</span>
       </div>
     </div>
   );

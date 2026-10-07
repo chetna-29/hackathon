@@ -35,6 +35,21 @@ export const sosApi = {
   getActiveSOS: async () => {
     const res = await api.get('/sos/active');
     return res.data;
+  },
+  updateStatus: async (sosId: number, status: string) => {
+    const res = await api.patch(`/sos/${sosId}/status`, { status });
+    return res.data;
+  },
+  createSOS: async (payload: any) => {
+    const res = await api.post('/sos/', payload);
+    return res.data;
+  }
+};
+
+export const meshApi = {
+  triggerSimulatedSOS: async (payload: any) => {
+    const res = await api.post('/mesh/packet', payload);
+    return res.data;
   }
 };
 

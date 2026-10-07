@@ -15,7 +15,7 @@ export const Households: React.FC = () => {
   return (
     <div className="flex flex-col h-full gap-4">
       {/* Filters (Mocked visual) */}
-      <div className="flex gap-4 shrink-0 p-3 bg-gray-900/80 rounded-xl border border-gray-800 text-xs">
+      <div className="flex gap-4 shrink-0 p-3 bg-gray-900/80 rounded-lg border border-gray-800 text-xs">
         <select className="bg-gray-800 text-gray-200 px-3 py-1.5 rounded border border-gray-700 outline-none">
           <option>All Districts</option>
           <option>Rudraprayag</option>
@@ -36,7 +36,7 @@ export const Households: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="flex-1 bg-gray-900/80 rounded-xl border border-gray-800 overflow-hidden flex flex-col">
+      <div className="flex-1 bg-gray-900/80 rounded-lg border border-gray-800 overflow-hidden flex flex-col">
         <div className="overflow-y-auto custom-scrollbar flex-1">
           <table className="w-full text-left text-sm text-gray-300">
             <thead className="text-xs text-gray-500 uppercase bg-gray-900 sticky top-0">
@@ -87,7 +87,7 @@ export const Households: React.FC = () => {
 
       {/* Bottom Profile Panel */}
       {selected && (
-        <div className="h-48 bg-gray-900/80 rounded-xl border border-gray-800 p-4 shrink-0 flex gap-6">
+        <div className="h-48 bg-gray-900/80 rounded-lg border border-gray-800 p-4 shrink-0 flex gap-6">
           <div className="w-1/3 border-r border-gray-800 pr-6 flex flex-col justify-center">
             <h3 className="text-lg font-bold text-white mb-4">Household Profile - {selected.household_code}</h3>
             <div className="grid grid-cols-2 gap-y-2 text-sm">

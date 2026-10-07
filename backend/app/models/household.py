@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from datetime import datetime
-from geoalchemy2 import Geometry
+from sqlalchemy import String
 from app.database import Base
 
 class Household(Base):
@@ -12,7 +12,7 @@ class Household(Base):
     address = Column(String(255), nullable=True)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
-    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
+    location = Column(String, nullable=True)
     elevation = Column(Float, default=1000.0)
     members_count = Column(Integer, default=1)
     elderly_count = Column(Integer, default=0)

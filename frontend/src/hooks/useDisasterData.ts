@@ -42,5 +42,5 @@ export const useDisasterData = () => {
     };
   }, []);
 
-  return { zones, households, queue, shelters, activeSos, loading };
+  return { zones, households, queue, shelters, activeSos, loading, refreshData: loadData };
 };

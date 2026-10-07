@@ -13,6 +13,9 @@ class LandslidePredictResponse(BaseModel):
     risk_level: str
     risk_score: float
     model_used: str
+    landslide_probability: Optional[float] = None
+    risk_category: Optional[str] = None
+    features_used: Optional[Any] = None
 
 class RiskZoneResponse(BaseModel):
     zone_code: str

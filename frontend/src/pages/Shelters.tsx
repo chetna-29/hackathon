@@ -13,14 +13,14 @@ export const Shelters: React.FC = () => {
   return (
     <div className="flex flex-col h-full gap-4">
       {/* Tabs */}
-      <div className="flex gap-4 shrink-0 px-2 text-sm font-bold uppercase tracking-wider text-gray-400">
+      <div className="flex gap-4 shrink-0 px-2 text-sm font-bold uppercase tracking-normal text-gray-400">
         <button className="text-white border-b-2 border-blue-500 pb-2 px-2">Shelters</button>
         <button className="hover:text-gray-200 pb-2 px-2 transition-colors">Hospitals</button>
       </div>
 
       <div className="flex gap-4 flex-1 min-h-0">
         {/* Table */}
-        <div className="flex-1 bg-gray-900/80 rounded-xl border border-gray-800 overflow-hidden flex flex-col">
+        <div className="flex-1 bg-gray-900/80 rounded-lg border border-gray-800 overflow-hidden flex flex-col">
           <div className="overflow-y-auto custom-scrollbar flex-1">
             <table className="w-full text-left text-sm text-gray-300">
               <thead className="text-xs text-gray-500 uppercase bg-gray-900 sticky top-0">
@@ -47,7 +47,7 @@ export const Shelters: React.FC = () => {
                       <td className="px-4 py-3 text-center">{s.current_occupancy}</td>
                       <td className="px-4 py-3 text-center font-bold">{s.available_beds}</td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${isAvailable && !isNearFull ? 'bg-safe/20 text-safe' : isNearFull ? 'bg-warning/20 text-warning' : 'bg-danger/20 text-danger'}`}>
+                        <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-normal ${isAvailable && !isNearFull ? 'bg-safe/20 text-safe' : isNearFull ? 'bg-warning/20 text-warning' : 'bg-danger/20 text-danger'}`}>
                           {isAvailable && !isNearFull ? 'AVAILABLE' : isNearFull ? 'NEAR FULL' : 'FULL'}
                         </span>
                       </td>
@@ -64,8 +64,8 @@ export const Shelters: React.FC = () => {
 
         {/* Side Detail Panel */}
         {selected && (
-          <div className="w-80 bg-gray-900/80 rounded-xl border border-gray-800 p-4 shrink-0 flex flex-col">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-gray-800 pb-2">Shelter Details</h3>
+          <div className="w-80 bg-gray-900/80 rounded-lg border border-gray-800 p-4 shrink-0 flex flex-col">
+            <h3 className="text-sm font-bold text-white uppercase tracking-normal mb-4 border-b border-gray-800 pb-2">Shelter Details</h3>
             <div className="space-y-3 text-sm flex-1">
               <div className="flex justify-between">
                 <span className="text-gray-400">Name:</span>

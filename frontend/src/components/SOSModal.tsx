@@ -11,11 +11,11 @@ interface Props {
 export const SOSModal: React.FC<Props> = ({ item, onClose, onCalculateRoute, onAssignRescue }) => {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md shadow-2xl overflow-hidden">
+      <div className="bg-gray-900 border border-gray-700 rounded-lg w-full max-w-md shadow-2xl overflow-hidden">
         <div className={`p-4 border-b ${item.severity === 'CRITICAL' ? 'bg-danger/20 border-danger/50' : 'bg-warning/20 border-warning/50'}`}>
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-xl font-bold text-white tracking-wider">EMERGENCY REQUEST</h2>
+              <h2 className="text-xl font-bold text-white tracking-normal">EMERGENCY REQUEST</h2>
               <p className="text-gray-300 font-mono text-sm mt-1">{item.sos_code}</p>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>

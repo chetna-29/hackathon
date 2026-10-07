@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, Text
 from datetime import datetime
-from geoalchemy2 import Geometry
+from sqlalchemy import String
 from app.database import Base
+from geoalchemy2 import Geometry
 
 class SOSRequest(Base):
     __tablename__ = "sos_requests"
@@ -12,7 +13,9 @@ class SOSRequest(Base):
     sender_device_id = Column(String(50), nullable=True)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
-    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
+    location = Column(String, nullable=True)
+    location_geom = Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
+    source_type = Column(String(20), default="MOBILE") # MOBILE, HARDWARE, RESCUER
     emergency_type = Column(String(50), default="LANDSLIDE_TRAPPED") # MEDICAL, COLLAPSE, FLOOD, TRAPPED
     severity = Column(String(20), default="HIGH") # CRITICAL, HIGH, MEDIUM, LOW
     status = Column(String(20), default="PENDING") # PENDING, ASSIGNED, DISPATCHED, RESCUED, CANCELLED

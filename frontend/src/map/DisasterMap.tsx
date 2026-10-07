@@ -80,6 +80,25 @@ const DistrictFocus = ({ districtName }: { districtName?: string }) => {
   return null;
 };
 
+// Reverse Geocoding Component
+const ReverseGeocode = ({ lat, lng }: { lat: number, lng: number }) => {
+  const [address, setAddress] = React.useState('Fetching location...');
+  React.useEffect(() => {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+      .then(r => r.json())
+      .then(d => {
+        // Just extract a shorter readable address
+        const parts = [];
+        if (d.address?.village || d.address?.town || d.address?.city) parts.push(d.address.village || d.address.town || d.address.city);
+        if (d.address?.county || d.address?.state_district) parts.push(d.address.county || d.address.state_district);
+        if (d.address?.state) parts.push(d.address.state);
+        setAddress(parts.length > 0 ? parts.join(', ') : d.display_name || 'Location unknown');
+      })
+      .catch(() => setAddress('Location lookup failed'));
+  }, [lat, lng]);
+  return <p className="text-[10px] text-gray-300 mt-1 truncate max-w-[250px]" title={address}>📍 {address}</p>;
+};
+
 export const DisasterMap: React.FC<Props> = ({ 
   zones, 
   households, 
@@ -145,7 +164,7 @@ export const DisasterMap: React.FC<Props> = ({
         >
           <Popup className="cinematic-popup" offset={[0, -10]}>
             <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700 p-4 w-64 rounded-lg shadow-2xl text-gray-200">
-              <h3 className="font-bold text-lg text-white tracking-widest uppercase mb-1 border-b border-gray-800 pb-2">{zone.name}</h3>
+              <h3 className="font-bold text-lg text-white tracking-normal uppercase mb-1 border-b border-gray-800 pb-2">{zone.name}</h3>
               <div className="space-y-2 mt-3 text-xs">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Risk Level</span>
@@ -190,8 +209,9 @@ export const DisasterMap: React.FC<Props> = ({
              <div className="bg-gray-900/95 backdrop-blur-md border-l-4 border-l-danger border-y border-y-gray-700 border-r border-r-gray-700 p-4 w-72 rounded-r-lg shadow-2xl text-gray-200">
                <div className="flex justify-between items-start mb-3 border-b border-gray-800 pb-2">
                  <div>
-                   <h3 className="font-bold text-sm text-danger tracking-widest uppercase">SOS REQUEST</h3>
+                   <h3 className="font-bold text-sm text-danger tracking-normal uppercase">SOS REQUEST</h3>
                    <p className="text-[10px] text-gray-400 font-mono mt-1">ID: {sos.sos_code} | HH: {sos.household_code}</p>
+                   <ReverseGeocode lat={sos.latitude} lng={sos.longitude} />
                  </div>
                  <span className="bg-danger/20 text-danger border border-danger/30 text-[9px] px-2 py-0.5 rounded font-bold">ACTIVE</span>
                </div>
@@ -212,12 +232,12 @@ export const DisasterMap: React.FC<Props> = ({
                </div>
 
                <div className="flex gap-2">
-                 <a href="/rescue" className="flex-1 block text-center bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white text-[10px] py-2 rounded font-bold tracking-widest transition-colors">
+                 <a href="/rescue" className="flex-1 block text-center bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white text-[10px] py-2 rounded font-bold tracking-normal transition-colors">
                    VIEW RESCUE
                  </a>
-                 <button className="flex-1 bg-blue-900/40 hover:bg-blue-800/60 border border-blue-800 text-blue-400 text-[10px] py-2 rounded font-bold tracking-widest transition-colors">
+                 <a href="/rescue" className="flex-1 block text-center bg-blue-900/40 hover:bg-blue-800/60 border border-blue-800 text-blue-400 text-[10px] py-2 rounded font-bold tracking-normal transition-colors">
                    SAFE ROUTE
-                 </button>
+                 </a>
                </div>
              </div>
           </Popup>

@@ -8,19 +8,19 @@ interface Props {
 
 export const PriorityQueue: React.FC<Props> = ({ queue, onSelect }) => {
   return (
-    <div className="flex flex-col h-full bg-gray-900/80 rounded-xl border border-gray-800">
+    <div className="flex flex-col h-full bg-gray-900/80 rounded-lg border border-gray-800">
       <div className="p-4 border-b border-gray-800 flex justify-between items-end">
         <div>
-          <h2 className="text-sm font-bold text-danger tracking-widest uppercase mb-1">Rescue Priority Queue</h2>
+          <h2 className="text-sm font-bold text-danger tracking-normal uppercase mb-1">Rescue Priority Queue</h2>
           <p className="text-xs text-blue-400">{queue.length} active requests</p>
         </div>
         <div className="flex items-center gap-1.5 bg-danger/10 px-2 py-0.5 rounded-full border border-danger/20">
           <div className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse"></div>
-          <span className="text-[10px] font-bold text-danger uppercase tracking-wider">Live</span>
+          <span className="text-[10px] font-bold text-danger uppercase tracking-normal">Live</span>
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
         {queue.length === 0 ? (
           <div className="text-gray-500 italic p-4 text-center text-sm">No active requests.</div>
         ) : (
@@ -39,7 +39,8 @@ export const PriorityQueue: React.FC<Props> = ({ queue, onSelect }) => {
             return (
               <div 
                 key={item.sos_id} 
-                className={`p-3 bg-gray-900 border-l-4 ${colorClass} rounded-r-lg border-y border-r border-y-gray-800 border-r-gray-800 flex items-center justify-between group hover:bg-gray-800 transition-colors`}
+                onClick={() => onSelect(item)}
+                className={`p-3 bg-transparent border-l-4 ${colorClass} border-b border-gray-800 flex items-center justify-between group hover:bg-gray-800/50 transition-colors cursor-pointer`}
               >
                 <div className="flex items-center gap-4">
                   <span className={`text-3xl font-bold ${isCritical ? 'text-danger' : isHigh ? 'text-warning' : isLow ? 'text-safe' : 'text-yellow-400'}`}>
@@ -53,21 +54,16 @@ export const PriorityQueue: React.FC<Props> = ({ queue, onSelect }) => {
                 </div>
                 
                 <div className="flex flex-col items-end gap-2">
-                  <span className={`text-[10px] px-2 py-0.5 rounded border font-bold tracking-wider ${badgeClass}`}>
+                  <span className={`text-[10px] px-2 py-0.5 rounded border font-bold tracking-normal ${badgeClass}`}>
                     {item.severity}
                   </span>
-                  <div className="flex gap-1">
-                    <button 
-                      onClick={() => onSelect(item)}
-                      className="text-[10px] px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded border border-gray-700 transition-colors"
-                    >
-                      View
-                    </button>
-                    <button 
-                      className="text-[10px] px-2 py-1 bg-blue-900/30 hover:bg-blue-800/50 text-blue-400 rounded border border-blue-900/50 transition-colors"
-                    >
-                      Assign
-                    </button>
+                  {item.via_mesh === "TRUE" && (
+                    <span className="text-[10px] px-2 py-0.5 rounded border font-bold tracking-normal bg-purple-900/40 text-purple-400 border-purple-500/50">
+                      MESH
+                    </span>
+                  )}
+                  <div className="text-[10px] text-gray-500 font-mono">
+                    SCORE: {item.priority_score.toFixed(1)}
                   </div>
                 </div>
               </div>

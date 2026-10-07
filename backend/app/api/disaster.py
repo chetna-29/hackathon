@@ -6,7 +6,7 @@ from app.database import get_db
 from app.models.risk_zone import RiskZone
 from app.schemas.risk import LandslidePredictRequest, LandslidePredictResponse, RiskZoneResponse
 from app.services.ml_service import get_landslide_prediction
-from app.services.websocket_manager import ws_manager
+from app.services.websocket_manager import publish_event
 
 router = APIRouter()
 
@@ -22,7 +22,7 @@ async def predict_landslide(request: LandslidePredictRequest, db: Session = Depe
         cumulative_rainfall_7d=request.cumulative_rainfall_7d or request.rainfall_24h * 2.2,
         slope=request.slope,
         elevation=request.elevation,
-        historical_disasters=request.historical_disasters or 1
+        historical_landslides=request.historical_disasters or 1
     )
 
     # Optionally update a targeted zone based on these values for demo purposes
@@ -35,7 +35,7 @@ async def predict_landslide(request: LandslidePredictRequest, db: Session = Depe
         db.commit()
 
         if old_level != zone.risk_level:
-            await ws_manager.broadcast("ZONE_RISK_UPDATED", {
+            publish_event("ZONE_RISK_UPDATED", {
                 "zone_code": zone.zone_code,
                 "new_level": zone.risk_level,
                 "risk_score": zone.risk_score

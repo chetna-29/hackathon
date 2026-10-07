@@ -13,6 +13,9 @@ class PriorityQueueItem(BaseModel):
     vulnerability_component: float
     risk_component: float
     isolation_component: float
+    time_decay_component: float = 0.0
+    medical_urgency_component: float = 0.0
+    ml_risk_component: float = 0.0
     latitude: float
     longitude: float
     emergency_type: str
@@ -20,6 +23,10 @@ class PriorityQueueItem(BaseModel):
     elderly_count: int = 0
     disabled_count: int = 0
     medical_needs: Optional[str] = None
+    source_type: Optional[str] = "MOBILE"
+    via_mesh: Optional[str] = "FALSE"
+    hops_count: Optional[int] = 0
+    notes: Optional[str] = None
     created_at: datetime
 
 class PriorityQueueResponse(BaseModel):
