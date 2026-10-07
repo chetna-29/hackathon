@@ -1,6 +1,28 @@
 import os
 import sys
 
+_CACHED_MODEL = None
+_CACHED_FEATURES = None
+
+def _load_model_once():
+    global _CACHED_MODEL, _CACHED_FEATURES
+    if _CACHED_MODEL is not None:
+        return True
+    
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, "models", "landslide_model.joblib")
+    
+    if os.path.exists(model_path):
+        try:
+            import joblib
+            payload = joblib.load(model_path)
+            _CACHED_MODEL = payload["model"]
+            _CACHED_FEATURES = payload["features"]
+            return True
+        except Exception:
+            pass
+    return False
+
 def predict_landslide_risk(
     rainfall_24h: float,
     cumulative_rainfall_7d: float = 0.0,
@@ -8,21 +30,16 @@ def predict_landslide_risk(
     elevation: float = 1000.0,
     historical_landslides: int = 1
 ) -> dict:
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(base_dir, "models", "landslide_model.joblib")
-
     # If cumulative rainfall not provided, approximate from 24h
     if cumulative_rainfall_7d <= 0.0:
         cumulative_rainfall_7d = rainfall_24h * 2.2
 
     # Attempt to use trained ML model if available
-    if os.path.exists(model_path):
+    if _load_model_once():
         try:
-            import joblib
             import pandas as pd
-            payload = joblib.load(model_path)
-            model = payload["model"]
-            features = payload["features"]
+            model = _CACHED_MODEL
+            features = _CACHED_FEATURES
 
             df_input = pd.DataFrame([{
                 "rainfall_24h": rainfall_24h,

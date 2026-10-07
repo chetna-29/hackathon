@@ -50,21 +50,27 @@ def compute_ranked_rescue_queue(db: Session) -> List[Dict[str, Any]]:
         SOSRequest.status.in_(["PENDING", "ASSIGNED", "DISPATCHED"])
     ).all()
 
+    # Optimization: Batch fetch to avoid N+1 queries
+    household_codes = [sos.household_code for sos in active_sos if sos.household_code]
+    households = {}
+    zones = {}
+    
+    if household_codes:
+        hh_results = db.query(Household).filter(Household.household_code.in_(household_codes)).all()
+        households = {hh.household_code: hh for hh in hh_results}
+        
+        zone_ids = [hh.zone_id for hh in hh_results if hh.zone_id]
+        if zone_ids:
+            zone_results = db.query(RiskZone).filter(RiskZone.zone_code.in_(zone_ids)).all()
+            zones = {z.zone_code: z for z in zone_results}
+
     queue_items = []
 
     for sos in active_sos:
-        # Fetch associated household if present
-        household = None
-        if sos.household_code:
-            household = db.query(Household).filter(Household.household_code == sos.household_code).first()
-
+        household = households.get(sos.household_code) if sos.household_code else None
         vuln_score = household.vulnerability_score if household else 0.5
         
-        # Check if located inside a risk zone
-        zone = None
-        if household:
-            zone = db.query(RiskZone).filter(RiskZone.zone_code == household.zone_id).first()
-        
+        zone = zones.get(household.zone_id) if (household and household.zone_id) else None
         risk_score = zone.risk_score if zone else 0.4
         isolation = 0.85 if (household and household.elevation > 1100) else 0.60
 
