@@ -6,7 +6,7 @@ from app.models.shelter import Shelter
 from app.models.user import User
 
 def seed_hackathon_demo_data(db: Session):
-    print("Seeding database with FIRE-EYE Wayanad Demo Scenario...")
+    print("Seeding database with FIRE-EYE Uttarakhand Demo Scenario...")
 
     # 1. Clear existing data
     Base.metadata.drop_all(bind=engine)
@@ -19,7 +19,7 @@ def seed_hackathon_demo_data(db: Session):
     # 3. Add Risk Zones
     zone_4 = RiskZone(
         zone_code="ZONE-04-NORTH",
-        name="Wayanad Sector 4 Hill Range",
+        name="Rudraprayag Sector 4 Hill Range",
         risk_level="LOW",
         risk_score=0.12,
         rainfall_24h=25.0,
@@ -27,13 +27,13 @@ def seed_hackathon_demo_data(db: Session):
         elevation=1250.0,
         population=1240,
         vulnerable_population=87,
-        center_lat=11.6080,
-        center_lng=76.0920,
-        polygon=f"SRID=4326;POLYGON(({76.0920-0.01} {11.6080-0.01}, {76.0920+0.01} {11.6080-0.01}, {76.0920+0.01} {11.6080+0.01}, {76.0920-0.01} {11.6080+0.01}, {76.0920-0.01} {11.6080-0.01}))"
+        center_lat=30.2844,
+        center_lng=78.9811,
+        polygon=f"SRID=4326;POLYGON(({78.9811-0.01} {30.2844-0.01}, {78.9811+0.01} {30.2844-0.01}, {78.9811+0.01} {30.2844+0.01}, {78.9811-0.01} {30.2844+0.01}, {78.9811-0.01} {30.2844-0.01}))"
     )
     zone_2 = RiskZone(
         zone_code="ZONE-02-VALLEY",
-        name="Wayanad Sector 2 Lowlands",
+        name="Kedarnath Valley Sector",
         risk_level="LOW",
         risk_score=0.08,
         rainfall_24h=25.0,
@@ -41,9 +41,9 @@ def seed_hackathon_demo_data(db: Session):
         elevation=800.0,
         population=3050,
         vulnerable_population=210,
-        center_lat=11.6200,
-        center_lng=76.1000,
-        polygon=f"SRID=4326;POLYGON(({76.1000-0.01} {11.6200-0.01}, {76.1000+0.01} {11.6200-0.01}, {76.1000+0.01} {11.6200+0.01}, {76.1000-0.01} {11.6200+0.01}, {76.1000-0.01} {11.6200-0.01}))"
+        center_lat=30.7352,
+        center_lng=79.0669,
+        polygon=f"SRID=4326;POLYGON(({79.0669-0.01} {30.7352-0.01}, {79.0669+0.01} {30.7352-0.01}, {79.0669+0.01} {30.7352+0.01}, {79.0669-0.01} {30.7352+0.01}, {79.0669-0.01} {30.7352-0.01}))"
     )
     db.add_all([zone_4, zone_2])
 
@@ -51,10 +51,10 @@ def seed_hackathon_demo_data(db: Session):
     h101 = Household(
         household_code="H101",
         zone_id="ZONE-04-NORTH",
-        address="42 Hilltop Ridge, Sector 4",
-        latitude=11.6082,
-        longitude=76.0921,
-        location="SRID=4326;POINT(76.0921 11.6082)",
+        address="42 Hilltop Ridge, Rudraprayag",
+        latitude=30.2846,
+        longitude=78.9815,
+        location="SRID=4326;POINT(78.9815 30.2846)",
         elevation=1260.0,
         members_count=4,
         elderly_count=2,
@@ -62,15 +62,15 @@ def seed_hackathon_demo_data(db: Session):
         disabled_count=1,
         medical_needs="Oxygen Concentrator"
     )
-    h101.vulnerability_score = h101.calculate_vulnerability() # should be ~0.94 (HIGH)
+    h101.vulnerability_score = h101.calculate_vulnerability()
 
     h102 = Household(
         household_code="H102",
         zone_id="ZONE-04-NORTH",
         address="15 Ridge View",
-        latitude=11.6075,
-        longitude=76.0930,
-        location="SRID=4326;POINT(76.0930 11.6075)",
+        latitude=30.2840,
+        longitude=78.9805,
+        location="SRID=4326;POINT(78.9805 30.2840)",
         elevation=1255.0,
         members_count=3,
         elderly_count=0,
@@ -84,11 +84,11 @@ def seed_hackathon_demo_data(db: Session):
     # 5. Add Shelters
     s1 = Shelter(
         shelter_code="SHELTER-ST-MARY",
-        name="St. Mary Community Shelter",
+        name="Rudraprayag District Shelter",
         facility_type="SHELTER",
-        latitude=11.6300,
-        longitude=76.1150,
-        location="SRID=4326;POINT(76.1150 11.6300)",
+        latitude=30.2900,
+        longitude=78.9900,
+        location="SRID=4326;POINT(78.9900 30.2900)",
         capacity=100,
         current_occupancy=58,
         has_medical_staff=True,

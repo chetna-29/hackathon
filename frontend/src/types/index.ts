@@ -10,12 +10,30 @@ export interface RiskZone {
 }
 
 export interface Household {
+  id: number;
   household_code: string;
   zone_id: string;
   latitude: number;
   longitude: number;
   members_count: number;
+  elderly_count: number;
+  children_count: number;
+  disabled_count: number;
+  medical_needs: string | null;
   vulnerability_score: number;
+}
+
+export interface SOSRequest {
+  id: number;
+  sos_code: string;
+  household_code: string | null;
+  severity: string;
+  status: string;
+  latitude: number;
+  longitude: number;
+  emergency_type: string;
+  created_at: string;
+  via_mesh: boolean;
 }
 
 export interface PriorityItem {
@@ -28,4 +46,28 @@ export interface PriorityItem {
   longitude: number;
   status: string;
   rank: number;
+  elderly_count: number;
+  disabled_count: number;
+}
+
+export interface Shelter {
+  id: number;
+  shelter_code: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  capacity: number;
+  current_occupancy: number;
+  available_beds: number;
+  is_safe: boolean;
+  has_medical_staff: boolean;
+}
+
+export interface RouteResponse {
+  distance_km: number;
+  duration_minutes: number;
+  hazard_status: string;
+  bypassed_hazard_zones: string[];
+  path: number[][];
+  destination_name: string;
 }

@@ -24,7 +24,7 @@ def run_hackathon_demo():
     print("=" * 70)
 
     print("\n[STEP 1] Initial State: Normal Weather")
-    print("  • Location: Wayanad Sector 4 Hill Range")
+    print("  • Location: Rudraprayag Sector 4 Hill Range")
     print("  • Rainfall (24h): 25.0 mm | Slope: 38° | Elevation: 1250m")
     print("  • Status: Zone Sector 4 is 🟢 LOW RISK (Risk Score: 0.12)")
     step_pause(1)
