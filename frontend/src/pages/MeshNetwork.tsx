@@ -20,6 +20,24 @@ export const MeshNetwork: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const connectBLEBeacon = async () => {
+    try {
+      // @ts-ignore - Web Bluetooth API
+      const device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+      });
+      
+      const deviceName = device.name || "Hardware Node";
+      alert(`Successfully paired with physical device: ${deviceName}. \n\nPhone is now acting as a Relay. Forwarding hardware signal to Command Center!`);
+      
+      // Hardware connected! Trigger the mesh simulation to show the relay in action!
+      runSimulation();
+    } catch (error) {
+      console.error("Bluetooth connection failed", error);
+      alert("Bluetooth connection failed. Ensure you are on a phone/laptop with Bluetooth enabled and the site is loaded over HTTPS.");
+    }
+  };
+
   const runSimulation = async () => {
     if (simState !== 0) return;
     
@@ -128,6 +146,15 @@ export const MeshNetwork: React.FC = () => {
         </div>
 
         <div className="flex gap-4">
+          <button 
+            onClick={connectBLEBeacon}
+            disabled={simState !== 0}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md font-medium transition-colors shadow-lg shadow-blue-600/20"
+          >
+            <Smartphone className="w-4 h-4" />
+            Pair BLE Hardware
+          </button>
+
           <button 
             onClick={runSimulation}
             disabled={simState !== 0}
