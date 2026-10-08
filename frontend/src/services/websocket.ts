@@ -90,4 +90,11 @@ class WebSocketService {
   }
 }
 
-export const wsService = new WebSocketService("ws://localhost:8000/api/v1/ws/");
+const getWsUrl = () => {
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  // Convert http:// or https:// to ws:// or wss://
+  const wsBase = apiUrl.replace(/^http/, "ws");
+  return `${wsBase}/api/v1/ws/`;
+};
+
+export const wsService = new WebSocketService(getWsUrl());
