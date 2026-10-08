@@ -17,16 +17,18 @@ def process_mesh_packet(db: Session, packet: MeshPacket) -> dict[str, Any]:
     """
     # 1. Duplicate Detection using Redis (High Performance)
     redis_key = f"mesh_seen:{packet.message_id}"
-    if redis_client.exists(redis_key):
-        return {
-            "status": "DUPLICATE_DROPPED",
-            "message_id": packet.message_id,
-            "action_taken": "Ignored",
-            "associated_sos_code": None,
-        }
-
-    # Cache for 24 hours
-    redis_client.setex(redis_key, 86400, "seen")
+    try:
+        if redis_client.exists(redis_key):
+            return {
+                "status": "DUPLICATE_DROPPED",
+                "message_id": packet.message_id,
+                "action_taken": "Ignored",
+                "associated_sos_code": None,
+            }
+        # Cache for 24 hours
+        redis_client.setex(redis_key, 86400, "seen")
+    except Exception as e:
+        print(f"Redis unavailable, skipping duplicate detection: {e}")
 
     # 2. TTL Verification (though gateway is final stop)
     if packet.ttl < 0:
