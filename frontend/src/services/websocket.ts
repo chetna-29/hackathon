@@ -14,7 +14,11 @@ class WebSocketService {
   }
 
   public connect() {
-    if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN)) {
+    if (
+      this.ws &&
+      (this.ws.readyState === WebSocket.CONNECTING ||
+        this.ws.readyState === WebSocket.OPEN)
+    ) {
       return;
     }
 
@@ -30,9 +34,9 @@ class WebSocketService {
       try {
         const payload = JSON.parse(event.data);
         const { event: eventType, data } = payload;
-        
+
         const eventHandlers = this.handlers.get(eventType) || [];
-        eventHandlers.forEach(handler => handler(data));
+        eventHandlers.forEach((handler) => handler(data));
       } catch (e) {
         console.error("Failed to parse WS message", e);
       }
@@ -70,7 +74,10 @@ class WebSocketService {
   public off(event: string, handler: EventHandler) {
     const eventHandlers = this.handlers.get(event);
     if (eventHandlers) {
-      this.handlers.set(event, eventHandlers.filter(h => h !== handler));
+      this.handlers.set(
+        event,
+        eventHandlers.filter((h) => h !== handler),
+      );
     }
   }
 
@@ -83,4 +90,4 @@ class WebSocketService {
   }
 }
 
-export const wsService = new WebSocketService('ws://localhost:8000/api/v1/ws/');
+export const wsService = new WebSocketService("ws://localhost:8000/api/v1/ws/");

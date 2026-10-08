@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { useDisasterData } from '../hooks/useDisasterData';
-import { routingApi } from '../services/api';
-import type { PriorityItem, RouteResponse } from '../types';
-import { AlertTriangle, MapPin, Navigation, Ambulance, Activity, ShieldAlert, Home } from 'lucide-react';
+import React, { useState } from "react";
+import { useDisasterData } from "../hooks/useDisasterData";
+import { routingApi } from "../services/api";
+import type { PriorityItem, RouteResponse } from "../types";
 
 export const RescueCenter: React.FC = () => {
   const { queue, loading } = useDisasterData();
@@ -14,7 +13,10 @@ export const RescueCenter: React.FC = () => {
     if (!selectedSOS) return;
     setCalculating(true);
     try {
-      const res = await routingApi.getSafeRoute({lat: selectedSOS.latitude, lng: selectedSOS.longitude});
+      const res = await routingApi.getSafeRoute({
+        lat: selectedSOS.latitude,
+        lng: selectedSOS.longitude,
+      });
       setRoute(res);
     } catch (e) {
       console.error("Routing failed", e);
@@ -25,171 +27,108 @@ export const RescueCenter: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-full flex flex-col items-center justify-center">
-        <Activity className="w-12 h-12 text-info animate-pulse mb-4" />
-        <div className="text-info font-mono tracking-widest uppercase animate-pulse">Loading Priority Matrix...</div>
+      <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-black text-gray-500 dark:text-gray-500 font-sans">
+        Loading Rescue Center...
       </div>
     );
   }
 
   return (
-    <div className="flex h-full gap-6 p-2 animate-fade-in-up">
-      {/* Left: Priority Queue List */}
-      <div className="w-1/3 min-w-[400px] flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-gray-800 pb-2">
-          <h2 className="text-sm font-bold tracking-widest uppercase text-white flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-danger" />
-            Active Priority Queue
-          </h2>
-          <span className="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-mono tracking-widest">{queue.length} INCIDENTS</span>
+    <div className="flex h-full bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans">
+      {/* Left Panel: Queue */}
+      <div className="w-[350px] border-r border-gray-200 dark:border-zinc-800 bg-white dark:bg-[#0a0a0a] flex flex-col">
+        <div className="p-4 border-b border-gray-200 dark:border-zinc-800">
+          <h2 className="text-lg font-medium tracking-tight">Active Requests</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-500">{queue.length} targets pending</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
-          {queue.length === 0 ? (
-            <div className="h-32 border border-dashed border-gray-700 rounded-xl flex items-center justify-center text-gray-500 font-mono text-xs uppercase tracking-widest">
-              No Active SOS Requests
-            </div>
-          ) : (
-            queue.map((item, index) => (
-              <div 
-                key={item.sos_id} 
-                onClick={() => { setSelectedSOS(item); setRoute(null); }}
-                className={`cinematic-card p-4 rounded-xl border cursor-pointer transition-all ${
-                  selectedSOS?.sos_id === item.sos_id ? 'border-info shadow-[0_0_20px_rgba(0,212,255,0.15)] bg-info/5' : 'border-[var(--color-border-card)]'
-                }`}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1 block">INCIDENT #{item.sos_code || `10${index}`}</span>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">Location HH-{item.household_code}</h3>
-                    <div className="flex gap-2">
-                      <span className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-widest ${item.severity === 'CRITICAL' ? 'bg-danger/20 text-danger border border-danger/30' : 'bg-warning/20 text-warning border border-warning/30'}`}>
-                        {item.severity}
-                      </span>
-                      {item.elderly_count > 0 && <span className="text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-widest bg-gray-800 text-gray-300 border border-gray-700">Elderly</span>}
-                      {item.disabled_count > 0 && <span className="text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-widest bg-gray-800 text-gray-300 border border-gray-700">Disabled</span>}
-                    </div>
-                  </div>
-                  
-                  {/* Priority Score Vis */}
-                  <div className="flex flex-col items-center justify-center w-16 h-16 rounded-full border-2 border-danger/50 bg-danger/10 shadow-[0_0_15px_rgba(255,59,48,0.2)]">
-                    <span className="text-xl font-numbers font-black text-danger">{item.priority_score.toFixed(0)}</span>
-                    <span className="text-[8px] text-danger/80 uppercase font-bold tracking-widest">Score</span>
-                  </div>
-                </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {queue.map((item, index) => (
+            <div
+              key={item.sos_id}
+              onClick={() => {
+                setSelectedSOS(item);
+                setRoute(null);
+              }}
+              className={`p-4 rounded border cursor-pointer transition-colors ${
+                selectedSOS?.sos_id === item.sos_id
+                  ? "bg-blue-50 border-blue-200"
+                  : "bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:border-zinc-700 hover:bg-gray-50 dark:bg-black"
+              }`}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-500">ID: {item.sos_code || `TGT-${index}`}</span>
+                <span className={`text-xs px-2 py-1 rounded ${item.severity === "CRITICAL" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
+                  {item.severity}
+                </span>
               </div>
-            ))
-          )}
+              <h3 className="font-medium mb-1">Sector {item.household_code}</h3>
+              <div className="text-sm text-gray-500 dark:text-gray-500">
+                Score: {item.priority_score.toFixed(1)}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Right: Selected Incident Detail */}
-      <div className="flex-1 cinematic-card rounded-xl border border-[var(--color-border-card)] flex flex-col overflow-hidden">
+      {/* Right Panel: Operations */}
+      <div className="flex-1 p-8 flex flex-col">
         {selectedSOS ? (
-          <>
-            <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-              <div>
-                <h2 className="text-2xl font-black text-white tracking-widest uppercase mb-1">INCIDENT HH-{selectedSOS.household_code}</h2>
-                <p className="text-xs text-gray-400 font-mono uppercase tracking-widest"><MapPin className="inline w-3 h-3 mr-1" /> Chamoli District, Sector 4</p>
+          <div className="max-w-4xl mx-auto w-full">
+            <h2 className="text-2xl font-medium tracking-tight mb-6">Target: Sector {selectedSOS.household_code}</h2>
+            
+            <div className="grid grid-cols-3 gap-6 mb-8">
+              <div className="bg-white dark:bg-[#0a0a0a] p-6 rounded border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
+                <div className="text-sm text-gray-500 dark:text-gray-500 mb-1">Severity</div>
+                <div className="text-xl font-medium">{selectedSOS.severity}</div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">System Priority Rank</p>
-                <p className="text-3xl font-numbers font-black text-danger">#{selectedSOS.rank}</p>
+              <div className="bg-white dark:bg-[#0a0a0a] p-6 rounded border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
+                <div className="text-sm text-gray-500 dark:text-gray-500 mb-1">Vulnerable Occupants</div>
+                <div className="text-xl font-medium">{selectedSOS.elderly_count + selectedSOS.disabled_count}</div>
               </div>
-            </div>
-
-            <div className="p-6 grid grid-cols-4 gap-6 bg-black/40 border-b border-gray-800">
-              <div>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Severity Risk</p>
-                <p className="text-sm font-bold text-danger uppercase tracking-wider">{selectedSOS.severity}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Vulnerability</p>
-                <p className="text-sm font-bold text-warning uppercase tracking-wider">{selectedSOS.elderly_count > 0 ? 'High' : 'Moderate'}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Isolation Risk</p>
-                <p className="text-sm font-bold text-danger uppercase tracking-wider">High</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Required Action</p>
-                <p className="text-sm font-bold text-info uppercase tracking-wider">Immediate Evac</p>
+              <div className="bg-white dark:bg-[#0a0a0a] p-6 rounded border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
+                <div className="text-sm text-gray-500 dark:text-gray-500 mb-1">Coordinates</div>
+                <div className="text-xl font-medium">{selectedSOS.latitude.toFixed(4)}, {selectedSOS.longitude.toFixed(4)}</div>
               </div>
             </div>
 
-            <div className="p-6 flex-1 flex flex-col gap-6 overflow-y-auto">
-              
-              {/* Action Buttons */}
-              <div className="flex gap-4">
-                <button className="flex-1 bg-danger hover:bg-danger-dark text-white font-bold py-3 px-4 rounded text-xs tracking-widest uppercase transition-colors shadow-[0_0_20px_rgba(255,59,48,0.3)] flex items-center justify-center gap-2">
-                  <Ambulance className="w-4 h-4" /> Dispatch Rescue Team
-                </button>
-                <button 
+            <div className="bg-white dark:bg-[#0a0a0a] p-6 rounded border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none mb-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-medium">Routing System</h3>
+                <button
                   onClick={handleCalculateRoute}
                   disabled={calculating}
-                  className="flex-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-info font-bold py-3 px-4 rounded text-xs tracking-widest uppercase transition-colors flex items-center justify-center gap-2"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50"
                 >
-                  <Navigation className="w-4 h-4" /> 
-                  {calculating ? 'Analyzing Terrain...' : 'Calculate Safe Route'}
+                  {calculating ? "Calculating..." : "Calculate Route"}
                 </button>
               </div>
 
-              {/* Route Preview */}
-              {route ? (
-                <div className="mt-4 border border-info/30 bg-info/5 rounded-xl overflow-hidden flex flex-col animate-fade-in-up">
-                  <div className="p-3 bg-info/10 border-b border-info/30 flex justify-between items-center">
-                    <h3 className="text-xs font-bold text-info tracking-widest uppercase flex items-center gap-2">
-                      <ShieldAlert className="w-4 h-4" /> Safe Evacuation Route Generated
-                    </h3>
-                    <span className="text-[10px] font-bold bg-safe/20 text-safe px-2 py-0.5 rounded uppercase tracking-widest">Verified</span>
+              <div className="bg-gray-50 dark:bg-black rounded border border-gray-200 dark:border-zinc-800 h-64 flex items-center justify-center">
+                {route ? (
+                  <div className="text-center">
+                    <div className="text-3xl font-medium mb-2">{route.distance_km.toFixed(1)} km</div>
+                    <p className="text-gray-500 dark:text-gray-500 mb-4">Estimated time: {(route.distance_km * 4).toFixed(0)} min</p>
+                    <p className="text-sm text-green-600 font-medium">{route.hazard_status || "Path Clear"}</p>
                   </div>
-                  
-                  <div className="flex h-48">
-                    <div className="flex-1 p-4 grid grid-cols-2 gap-4">
-                       <div>
-                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Distance</p>
-                         <p className="text-xl font-numbers font-bold text-white">{route.distance_km.toFixed(1)} <span className="text-xs text-gray-400 font-sans">km</span></p>
-                       </div>
-                       <div>
-                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Est. Time</p>
-                         <p className="text-xl font-numbers font-bold text-white">{(route.distance_km * 4).toFixed(0)} <span className="text-xs text-gray-400 font-sans">min</span></p>
-                       </div>
-                       <div>
-                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Hazard Status</p>
-                         <p className="text-sm font-bold text-safe uppercase">{route.hazard_status || 'Clear'}</p>
-                       </div>
-                       <div>
-                         <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Destination</p>
-                         <p className="text-sm font-bold text-info uppercase truncate">{route.destination_name || 'Nearest Shelter'}</p>
-                       </div>
-                    </div>
-                    
-                    {/* Visual map placeholder */}
-                    <div className="w-64 bg-black relative border-l border-info/20">
-                      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=400')] bg-cover bg-center opacity-30 grayscale filter"></div>
-                      <div className="absolute inset-0 bg-info/10 mix-blend-overlay"></div>
-                      <div className="absolute top-1/2 left-1/4 right-1/4 h-1 border-t-2 border-dashed border-info -translate-y-1/2 glow-danger route-flow-animation"></div>
-                      <MapPin className="absolute top-1/2 left-1/4 w-4 h-4 text-danger -translate-x-1/2 -translate-y-1/2" />
-                      <Home className="absolute top-1/2 right-1/4 w-4 h-4 text-safe translate-x-1/2 -translate-y-1/2" />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-4 flex-1 border border-dashed border-gray-800 rounded-xl flex items-center justify-center text-gray-600 font-mono text-[10px] uppercase tracking-widest">
-                  Route data not yet generated
-                </div>
-              )}
-
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-500">Route not calculated yet.</p>
+                )}
+              </div>
             </div>
-          </>
+
+            <div className="flex justify-end">
+               <button className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded text-sm font-medium transition-colors">
+                 Dispatch Rescue Team
+               </button>
+            </div>
+          </div>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-gray-600 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMikiLz48L3N2Zz4=')]">
-            <Activity className="w-16 h-16 mb-4 opacity-20" />
-            <p className="font-mono text-xs uppercase tracking-widest">Select an incident from the queue to view operations</p>
+          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-500">
+            Select a target from the queue to view details.
           </div>
         )}
       </div>
-
     </div>
   );
 };

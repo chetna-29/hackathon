@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
-from datetime import datetime
-from sqlalchemy import String
 from app.database import Base
+from sqlalchemy import Boolean, Column, Float, Integer, String
+
 
 class Shelter(Base):
     __tablename__ = "shelters"
@@ -9,7 +8,7 @@ class Shelter(Base):
     id = Column(Integer, primary_key=True, index=True)
     shelter_code = Column(String(50), unique=True, index=True, nullable=False)
     name = Column(String(100), nullable=False)
-    facility_type = Column(String(50), default="SHELTER") # SHELTER, HOSPITAL, CLINIC
+    facility_type = Column(String(50), default="SHELTER")
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     location = Column(String, nullable=True)

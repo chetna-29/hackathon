@@ -1,115 +1,136 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ShieldCheck, Activity, ArrowLeft } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const AuthPage: React.FC = () => {
   const { role } = useParams<{ role: string }>(); // 'responder' or 'citizen'
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
 
-  const isResponder = role === 'responder';
-  
+  const isResponder = role === "responder";
+
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock authentication - route based on role
     if (isResponder) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     } else {
-      navigate('/citizen');
+      navigate("/citizen");
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#05080D] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans text-gray-200">
-      
-      {/* Background FX */}
-      <div className={`absolute top-0 w-[500px] h-[500px] rounded-full blur-[150px] opacity-20 pointer-events-none ${isResponder ? 'bg-danger left-0 -translate-x-1/2 -translate-y-1/2' : 'bg-safe right-0 translate-x-1/2 -translate-y-1/2'}`}></div>
-
-      <button 
-        onClick={() => navigate('/')}
-        className="absolute top-8 left-8 text-gray-500 hover:text-white flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors"
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4 font-sans text-gray-900 dark:text-gray-100 selection:bg-blue-100">
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-8 left-8 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:text-gray-100 text-sm font-medium transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Back to Entry
+        ← Back
       </button>
 
-      <div className="cinematic-card w-full max-w-md p-8 rounded-2xl border border-gray-800 relative z-10 animate-fade-in-up">
-        
-        <div className="flex flex-col items-center mb-8">
-          <div className={`w-16 h-16 rounded-xl border flex items-center justify-center mb-4 ${
-            isResponder ? 'bg-danger/10 border-danger/20 text-danger shadow-[0_0_20px_rgba(255,59,48,0.3)]' : 'bg-safe/10 border-safe/20 text-safe shadow-[0_0_20px_rgba(48,209,88,0.3)]'
-          }`}>
-            {isResponder ? <ShieldCheck className="w-8 h-8" /> : <Activity className="w-8 h-8" />}
-          </div>
-          <h2 className="text-2xl font-black text-white tracking-widest uppercase text-center">
-            {isResponder ? 'Responder Auth' : 'Citizen Portal'}
+      <div className="w-full max-w-sm">
+        <div className="mb-8">
+          <h2 className="text-2xl font-medium tracking-tight mb-2">
+            {isResponder ? "Responder sign in" : "Citizen sign in"}
           </h2>
-          <p className="text-gray-400 text-xs mt-2 uppercase tracking-widest font-mono">
-            {isLogin ? 'Enter Credentials' : 'Create Account'}
+          <p className="text-sm text-gray-500 dark:text-gray-500">
+            {isLogin ? "Enter your credentials to continue." : "Create a new account."}
           </p>
         </div>
 
         <form onSubmit={handleAuth} className="space-y-4">
-          
           {!isLogin && (
             <div>
-              <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Full Name</label>
-              <input type="text" required className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-info transition-colors" placeholder="John Doe" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                required
+                className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+              />
             </div>
           )}
 
           {isResponder ? (
             <>
               <div>
-                <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Email Address</label>
-                <input type="email" required className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-info transition-colors" placeholder="responder@agency.gov" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                />
               </div>
               {!isLogin && (
                 <div>
-                  <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Organization / Team ID</label>
-                  <input type="text" required className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-info transition-colors" placeholder="NDRF-UK-04" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Organization ID
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                  />
                 </div>
               )}
             </>
           ) : (
             <>
               <div>
-                <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Phone / Email</label>
-                <input type="text" required className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-info transition-colors" placeholder="+91 98765 43210" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Phone or Email
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                />
               </div>
               {!isLogin && (
                 <div>
-                  <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Emergency Contact</label>
-                  <input type="text" required className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-info transition-colors" placeholder="+91 91234 56789" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Emergency Contact
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                  />
                 </div>
               )}
             </>
           )}
 
           <div>
-            <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Password</label>
-            <input type="password" required className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-info transition-colors" placeholder="••••••••" />
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+            />
           </div>
 
-          <button 
-            type="submit" 
-            className={`w-full py-4 rounded-lg font-bold tracking-widest text-sm uppercase transition-all mt-4 text-white shadow-lg ${
-              isResponder ? 'bg-danger hover:bg-danger-dark shadow-danger/30' : 'bg-info hover:bg-info/80 shadow-info/30 text-black'
-            }`}
+          <button
+            type="submit"
+            className="w-full py-2.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors mt-2"
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {isLogin ? "Sign In" : "Create Account"}
           </button>
-
         </form>
 
-        <div className="mt-8 text-center">
-          <button 
+        <div className="mt-6">
+          <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-xs text-gray-400 hover:text-white transition-colors"
+            className="text-sm text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:text-gray-100 transition-colors"
           >
-            {isLogin ? "Don't have an account? Create one." : "Already have an account? Sign in."}
+            {isLogin
+              ? "Don't have an account? Create one."
+              : "Already have an account? Sign in."}
           </button>
         </div>
-
       </div>
     </div>
   );

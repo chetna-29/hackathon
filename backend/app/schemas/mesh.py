@@ -1,26 +1,28 @@
 from pydantic import BaseModel
-from typing import List, Optional, Any
+
 
 class MeshPayload(BaseModel):
-    vulnerabilities: Optional[List[str]] = []
-    people_count: Optional[int] = 1
-    battery_level: Optional[int] = 100
+    vulnerabilities: list[str] | None = []
+    people_count: int | None = 1
+    battery_level: int | None = 100
+
 
 class MeshPacket(BaseModel):
     message_id: str
     sender_id: str
     type: str = "SOS"
-    household_id: Optional[str] = None
+    household_id: str | None = None
     latitude: float
     longitude: float
     severity: str = "CRITICAL"
     timestamp: int
     ttl: int = 8
-    hops: List[str] = []
-    payload: Optional[MeshPayload] = None
+    hops: list[str] = []
+    payload: MeshPayload | None = None
+
 
 class MeshPacketAck(BaseModel):
-    status: str # ACCEPTED, DUPLICATE_DROPPED, TTL_EXPIRED
+    status: str
     message_id: str
     action_taken: str
-    associated_sos_code: Optional[str] = None
+    associated_sos_code: str | None = None

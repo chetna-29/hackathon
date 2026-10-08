@@ -1,13 +1,16 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime
 from datetime import datetime
-from sqlalchemy import String
+
 from app.database import Base
+from sqlalchemy import Column, DateTime, Float, Integer, String
+
 
 class Household(Base):
     __tablename__ = "households"
 
     id = Column(Integer, primary_key=True, index=True)
-    household_code = Column(String(50), unique=True, index=True, nullable=False)  # e.g., H101
+    household_code = Column(
+        String(50), unique=True, index=True, nullable=False
+    )
     zone_id = Column(String(50), index=True, nullable=False)
     address = Column(String(255), nullable=True)
     latitude = Column(Float, nullable=False)
@@ -18,7 +21,9 @@ class Household(Base):
     elderly_count = Column(Integer, default=0)
     children_count = Column(Integer, default=0)
     disabled_count = Column(Integer, default=0)
-    medical_needs = Column(String(255), nullable=True)  # e.g., "Oxygen Concentrator", "Insulin"
+    medical_needs = Column(
+        String(255), nullable=True
+    )
     vulnerability_score = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
 

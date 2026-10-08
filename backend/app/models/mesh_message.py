@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, Text, DateTime
 from datetime import datetime
+
 from app.database import Base
+from sqlalchemy import Column, DateTime, Float, Integer, String, Text
+
 
 class MeshMessage(Base):
     __tablename__ = "mesh_messages"
@@ -14,6 +16,6 @@ class MeshMessage(Base):
     longitude = Column(Float, nullable=True)
     severity = Column(String(20), nullable=True)
     ttl = Column(Integer, default=8)
-    hops_trail = Column(Text, nullable=True) # JSON list of nodes visited
+    hops_trail = Column(Text, nullable=True)
     raw_payload = Column(Text, nullable=True)
     received_at = Column(DateTime, default=datetime.utcnow)

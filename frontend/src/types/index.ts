@@ -1,7 +1,7 @@
 export interface RiskZone {
   zone_code: string;
   name: string;
-  risk_level: 'LOW' | 'MEDIUM' | 'HIGH';
+  risk_level: "LOW" | "MEDIUM" | "HIGH";
   risk_score: number;
   center_lat: number;
   center_lng: number;

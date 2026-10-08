@@ -1,16 +1,19 @@
-from sqlalchemy import Column, Integer, String, Float, Text, DateTime
 from datetime import datetime
-from sqlalchemy import String
+
 from app.database import Base
+from sqlalchemy import Column, DateTime, Float, Integer, String, Text
+
 
 class RiskZone(Base):
     __tablename__ = "risk_zones"
 
     id = Column(Integer, primary_key=True, index=True)
-    zone_code = Column(String(50), unique=True, index=True, nullable=False) # e.g., ZONE-04-NORTH
+    zone_code = Column(
+        String(50), unique=True, index=True, nullable=False
+    )
     name = Column(String(100), nullable=False)
-    risk_level = Column(String(20), default="LOW") # LOW, MEDIUM, HIGH
-    risk_score = Column(Float, default=0.15)       # 0.0 to 1.0
+    risk_level = Column(String(20), default="LOW")
+    risk_score = Column(Float, default=0.15)
     rainfall_24h = Column(Float, default=20.0)
     cumulative_rainfall_7d = Column(Float, default=50.0)
     slope = Column(Float, default=30.0)
@@ -22,5 +25,5 @@ class RiskZone(Base):
     center_lat = Column(Float, nullable=False)
     center_lng = Column(Float, nullable=False)
     polygon = Column(String, nullable=True)
-    polygon_geojson = Column(Text, nullable=True) # JSON coordinates polygon
+    polygon_geojson = Column(Text, nullable=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

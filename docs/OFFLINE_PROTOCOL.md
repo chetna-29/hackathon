@@ -64,8 +64,7 @@ FIRE-EYE uses a **Store-and-Forward Opportunistic Mesh Network** over short-rang
 
 ---
 
-## 4. Node Ingestion Rules
-When Node $N$ receives packet $P$:
+## 4. Node Ingestion Rulesf
 
 1. **Duplicate Check**:
    - Check if $P.\text{message\_id} \in \text{seen\_messages}$.

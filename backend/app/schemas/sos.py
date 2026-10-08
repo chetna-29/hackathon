@@ -1,35 +1,38 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
 
+from pydantic import BaseModel
+
+
 class SOSCreate(BaseModel):
-    household_code: Optional[str] = None
-    sender_device_id: Optional[str] = "BROWSER-CLIENT"
+    household_code: str | None = None
+    sender_device_id: str | None = "BROWSER-CLIENT"
     latitude: float
     longitude: float
     emergency_type: str = "LANDSLIDE_TRAPPED"
-    severity: str = "HIGH" # CRITICAL, HIGH, MEDIUM, LOW
-    notes: Optional[str] = None
-    via_mesh: Optional[str] = "FALSE"
+    severity: str = "HIGH"
+    notes: str | None = None
+    via_mesh: str | None = "FALSE"
+
 
 class SOSStatusUpdate(BaseModel):
-    status: str # PENDING, ASSIGNED, DISPATCHED, RESCUED, CANCELLED
-    assigned_team_id: Optional[str] = None
-    assigned_shelter_id: Optional[str] = None
+    status: str
+    assigned_team_id: str | None = None
+    assigned_shelter_id: str | None = None
+
 
 class SOSResponse(BaseModel):
     id: int
     sos_code: str
-    household_code: Optional[str] = None
+    household_code: str | None = None
     latitude: float
     longitude: float
     emergency_type: str
     severity: str
     status: str
     priority_score: float
-    notes: Optional[str] = None
-    via_mesh: Optional[str] = "FALSE"
-    hops_count: Optional[int] = 0
+    notes: str | None = None
+    via_mesh: str | None = "FALSE"
+    hops_count: int | None = 0
     created_at: datetime
 
     class Config:

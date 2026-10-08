@@ -1,11 +1,12 @@
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import datetime
+
+from pydantic import BaseModel
+
 
 class PriorityQueueItem(BaseModel):
     sos_id: int
     sos_code: str
-    household_code: Optional[str] = None
+    household_code: str | None = None
     rank: int
     priority_score: float
     severity: str
@@ -22,13 +23,14 @@ class PriorityQueueItem(BaseModel):
     status: str
     elderly_count: int = 0
     disabled_count: int = 0
-    medical_needs: Optional[str] = None
-    source_type: Optional[str] = "MOBILE"
-    via_mesh: Optional[str] = "FALSE"
-    hops_count: Optional[int] = 0
-    notes: Optional[str] = None
+    medical_needs: str | None = None
+    source_type: str | None = "MOBILE"
+    via_mesh: str | None = "FALSE"
+    hops_count: int | None = 0
+    notes: str | None = None
     created_at: datetime
+
 
 class PriorityQueueResponse(BaseModel):
     total_active_sos: int
-    queue: List[PriorityQueueItem]
+    queue: list[PriorityQueueItem]

@@ -1,21 +1,25 @@
+from typing import Any
+
 from pydantic import BaseModel
-from typing import Optional, List, Any
+
 
 class LandslidePredictRequest(BaseModel):
     rainfall_24h: float
-    cumulative_rainfall_7d: Optional[float] = None
+    cumulative_rainfall_7d: float | None = None
     slope: float = 35.0
     elevation: float = 1200.0
-    soil_type: Optional[str] = "clay_loam"
-    historical_disasters: Optional[int] = 1
+    soil_type: str | None = "clay_loam"
+    historical_disasters: int | None = 1
+
 
 class LandslidePredictResponse(BaseModel):
     risk_level: str
     risk_score: float
     model_used: str
-    landslide_probability: Optional[float] = None
-    risk_category: Optional[str] = None
-    features_used: Optional[Any] = None
+    landslide_probability: float | None = None
+    risk_category: str | None = None
+    features_used: Any | None = None
+
 
 class RiskZoneResponse(BaseModel):
     zone_code: str
@@ -29,4 +33,4 @@ class RiskZoneResponse(BaseModel):
     vulnerable_population: int
     center_lat: float
     center_lng: float
-    polygon_geojson: Optional[str] = None
+    polygon_geojson: str | None = None

@@ -1,15 +1,18 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from typing import List
-
 from app.database import get_db
 from app.models.household import Household
 from app.schemas.household import HouseholdResponse
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-@router.get("/", response_model=List[HouseholdResponse])
-def get_households(zone_id: str = None, min_vulnerability: float = 0.0, db: Session = Depends(get_db)):
+
+@router.get("/", response_model=list[HouseholdResponse])
+def get_households(
+    zone_id: str | None = None,
+    min_vulnerability: float = 0.0,
+    db: Session = Depends(get_db),
+):
     query = db.query(Household)
     if zone_id:
         query = query.filter(Household.zone_id == zone_id)

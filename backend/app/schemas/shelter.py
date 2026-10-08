@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+
 
 class ShelterResponse(BaseModel):
     id: int
@@ -15,7 +15,7 @@ class ShelterResponse(BaseModel):
     has_power_backup: bool
     has_oxygen: bool
     is_safe: bool
-    contact_phone: Optional[str] = None
+    contact_phone: str | None = None
 
     class Config:
         from_attributes = True
